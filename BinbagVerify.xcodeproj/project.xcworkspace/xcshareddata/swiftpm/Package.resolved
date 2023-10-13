@@ -1,0 +1,32 @@
+{
+  "pins" : [
+    {
+      "identity" : "divesdkios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/IDScanNet/DIVESDKIOS.git",
+      "state" : {
+        "revision" : "23e9f8f31f39c6baa0f3ce186d3d7eb7d953c42d",
+        "version" : "1.231006.1"
+      }
+    },
+    {
+      "identity" : "idscaniddetectorios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/IDScanNet/IDScanIDDetectorIOS.git",
+      "state" : {
+        "revision" : "d8df86680be00fbab065d5568b26ce0252fc5a77",
+        "version" : "1.231002.2"
+      }
+    },
+    {
+      "identity" : "idscantoolsios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/IDScanNet/IDScanToolsIOS.git",
+      "state" : {
+        "revision" : "af61a5ca1137a1af95858c166094425afc278795",
+        "version" : "1.230616.1"
+      }
+    }
+  ],
+  "version" : 2
+}
