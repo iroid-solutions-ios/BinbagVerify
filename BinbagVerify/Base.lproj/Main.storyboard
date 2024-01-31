@@ -3,7 +3,7 @@
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -28,7 +28,7 @@
         <!--DVS SDK-->
         <scene sceneID="8wM-l9-XZ6">
             <objects>
-                <viewController storyboardIdentifier="DVSSDK_VC" id="TUt-i0-rIH" customClass="DVSSDK_VC" customModule="BinbagVerify" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="DIVESDK_VC" id="TUt-i0-rIH" customClass="DIVESDK_VC" customModule="BinbagVerify" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="lmI-rA-JYu">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -77,7 +77,7 @@
         <!--DVS Online SDK-->
         <scene sceneID="gdx-ur-Fw9">
             <objects>
-                <viewController storyboardIdentifier="DVSOnlineSDK_VC" id="YW9-rS-2o4" customClass="DVSOnlineSDK_VC" customModule="BinbagVerify" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="DIVEOnlineSDK_VC" id="YW9-rS-2o4" customClass="DIVEOnlineSDK_VC" customModule="BinbagVerify" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="EdW-rU-rpQ">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -182,7 +182,7 @@
         <!--Result-->
         <scene sceneID="YmV-3X-Ibz">
             <objects>
-                <viewController storyboardIdentifier="Result_VC" title="Result" id="pZ1-yk-A34" customClass="Result_VC" customModule="DVSSDKTest" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="Result_VC" title="Result" id="pZ1-yk-A34" customClass="Result_VC" customModule="BinbagVerify" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="hld-fh-mMR">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

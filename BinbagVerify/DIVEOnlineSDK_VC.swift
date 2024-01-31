@@ -7,12 +7,12 @@
 
 import Foundation
 import UIKit
-import DVSOnlineSDK
-import DVSSDKCommon
+import DIVEOnlineSDK
+import DIVESDKCommon
 
-class DVSOnlineSDK_VC: UIViewController, DVSSDKDelegate {
-    
-    var sdk: DVSOnlineSDK?
+class DIVEOnlineSDK_VC: UIViewController, DIVESDKDelegate {
+    let baseURL = "https://stage.api-dvsonline.idscan.net/api/v2"
+    var sdk: DIVEOnlineSDK?
 
 
     
@@ -29,13 +29,13 @@ class DVSOnlineSDK_VC: UIViewController, DVSSDKDelegate {
     @IBAction func loadConfigAction(_ sender: UIButton) {
         self.showWaitingAlert(message: "⚙️\n\nLoading configuration")
         
-        DVSOnlineSDK.getApplicantID { [weak self] result in
+        DIVEOnlineSDK.getApplicantID(baseURL: self.baseURL) { [weak self] result in
             guard let strongSelf = self else { return }
-            // MARK: - <# #>
+            // MARK: -
             switch result {
                 case .success(let applicantID):
-                print(applicantID)
-                strongSelf.sdk = DVSOnlineSDK(applicantID: applicantID, integrationID: libToken, token: secretToken, delegate: strongSelf)
+                    strongSelf.sdk = DIVEOnlineSDK(applicantID: applicantID, integrationID: libToken, token: secretToken, baseURL: strongSelf.baseURL + "/public", delegate: strongSelf)
+                    strongSelf.sdk?.updateLocation()
                     strongSelf.sdk?.loadConfiguration() { [weak strongSelf] error in
                         guard let strongSelf2 = strongSelf else { return }
                         
@@ -68,48 +68,47 @@ class DVSOnlineSDK_VC: UIViewController, DVSSDKDelegate {
         }
     }
     
-    // MARK: - DVSSDKDelegate
-
-    func dvsSDKResult(sdk: Any, result: [String : Any]) {
+    // MARK: - DIVESDKDelegate
+    func diveSDKResult(sdk: Any, result: [String : Any]) {
         self.dismissWaitingAlert()
         self.openResult(result: result)
     }
     
-    func dvsSDKSendingDataStarted(sdk: Any) {
-        if let sdk = sdk as? DVSOnlineSDK {
+    func diveSDKSendingDataStarted(sdk: Any) {
+        if let sdk = sdk as? DIVEOnlineSDK {
             sdk.close()
         }
         
         self.showWaitingAlert(message: "💭\n\nUploading data")
     }
     
-    func dvsSDKSendingDataProgress(sdk: Any, progress: Float, requestTime: TimeInterval) {
-        let progressPercent = requestTime > 1 ? ": \(round((progress * 100) * 100) / 100.0)%" : ""
-        let progressStr = progress == 1 ? "Validation" : "Uploading data\(progressPercent)"
+    func diveSDKSendingDataProgress(sdk: Any, progress: Float, requestTime: TimeInterval) {
+        let progressPercent = "\(round((progress * 100) * 100) / 100.0)%"
+        let progressStr = progress == 1 ? "Validation" : "Uploading data: \(progressPercent)"
         self.showWaitingAlert(message: "💭\n\n\(progressStr)")
     }
-
-    func dvsSDKError(sdk: Any, error: Error) {
+    
+    func diveSDKError(sdk: Any, error: Error) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.showOKAlert(title: "❗️\nError", message: error.localizedDescription)
         }
     }
 }
 
-public typealias DVSOnlineSDKApplicantIDResult = Result<String, Error>
+public typealias DIVEOnlineSDKApplicantIDResult = Result<String, Error>
 
-extension DVSOnlineSDK {
-    class func getApplicantID(handler block: @escaping (DVSOnlineSDKApplicantIDResult) -> Void) {
-        let url = "https://api-dvsonline.idscan.net/api/v2/private/Applicants"
+extension DIVEOnlineSDK {
+    class func getApplicantID(baseURL: String, handler block: @escaping (DIVEOnlineSDKApplicantIDResult) -> Void) {
+        let url =  baseURL + "/private/Applicants"
         let params = ["firstName" : "Marc", "lastName" : "Vincent", "phone" : "+123457896"]
         
-        DVSNetwork.request(url: url, method: .post, parameters: params, token: secretToken) { result in
+        DIVENetwork().request(url: url, method: "POST", parameters: params, token: secretToken) { result in
             switch result {
                 case .success(let data):
                     if let applicantId = data["applicantId"] as? String {
                         block(.success(applicantId))
                     } else {
-                        block(.failure(DVSError.somethingWentWrong()))
+                        block(.failure(DIVEError.somethingWentWrong()))
                     }
                 case .failure(let error):
                     block(.failure(error))

@@ -1,12 +1,12 @@
 {
   "pins" : [
     {
-      "identity" : "divesdkios",
+      "identity" : "dive-sdk-ios",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/IDScanNet/DIVESDKIOS.git",
+      "location" : "https://github.com/IDScanNet/DIVE-SDK-iOS",
       "state" : {
-        "revision" : "23e9f8f31f39c6baa0f3ce186d3d7eb7d953c42d",
-        "version" : "1.231006.1"
+        "revision" : "95bad6a38dbbfbff34c6e673b38b7d21c2021ae4",
+        "version" : "1.240125.1"
       }
     },
     {
@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/IDScanNet/IDScanToolsIOS.git",
       "state" : {
-        "revision" : "af61a5ca1137a1af95858c166094425afc278795",
-        "version" : "1.230616.1"
+        "revision" : "66206b22a164ce3772a2e9d289560677b4e7ea77",
+        "version" : "1.240130.3"
       }
     }
   ],

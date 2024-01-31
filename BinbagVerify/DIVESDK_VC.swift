@@ -7,16 +7,17 @@
 
 import Foundation
 import UIKit
-import DVSSDK
+import DIVESDK
+import DIVESDKCommon
 
-class DVSSDK_VC: UIViewController, DVSSDKDelegate {
+class DIVESDK_VC: UIViewController, DIVESDKDelegate {
     
-    var sdk: DVSSDK?
+    var sdk: DIVESDK?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         print("libToken",libToken)
-        if let json = loadJson(filename: "ConfigDemo"), let sdk = DVSSDK(configuration: json, token: secretToken, delegate: self) {
+        if let json = loadJson(filename: "ConfigDemo"), let sdk = DIVESDK(configuration: json, token: secretToken, delegate: self) {
             print("json",json)
             self.sdk = sdk
         }
@@ -39,35 +40,29 @@ class DVSSDK_VC: UIViewController, DVSSDKDelegate {
         }
     }
     
-    // MARK: - DVSSDKDelegate
-
-    func dvsSDKResult(sdk: Any, result: [String : Any]) {
-        print(result)
+    // MARK: - DIVESDKDelegate
+    
+    func diveSDKResult(sdk: Any, result: [String : Any]) {
         self.dismissWaitingAlert()
         self.openResult(result: result)
     }
     
-    func dvsSDKSendingDataStarted(sdk: Any) {
-        if let sdk = sdk as? DVSSDK {
+    func diveSDKSendingDataStarted(sdk: Any) {
+        if let sdk = sdk as? DIVESDK {
             sdk.close()
         }
-        
         self.showWaitingAlert(message: "💭\n\nUploading data")
     }
     
-    func dvsSDKSendingDataProgress(sdk: Any, progress: Float, requestTime: TimeInterval) {
-        print(progress)
-        print(requestTime)
-        let progressPercent = requestTime > 1 ? ": \(round((progress * 100) * 100) / 100.0)%" : ""
-        let progressStr = progress == 1 ? "Validation" : "Uploading data\(progressPercent)"
+    func diveSDKSendingDataProgress(sdk: Any, progress: Float, requestTime: TimeInterval) {
+        let progressPercent = "\(round((progress * 100) * 100) / 100.0)%"
+        let progressStr = progress == 1 ? "Validation" : "Uploading data: \(progressPercent)"
         self.showWaitingAlert(message: "💭\n\n\(progressStr)")
     }
-    
-    func dvsSDKError(sdk: Any, error: Error) {
-        print(error.localizedDescription)
+
+    func diveSDKError(sdk: Any, error: Error) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.showOKAlert(title: "❗️\nError", message: error.localizedDescription)
         }
     }
-    
 }
