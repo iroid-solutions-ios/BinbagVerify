@@ -1,0 +1,50 @@
+PODS:
+  - Alamofire (4.9.1)
+  - AlamofireObjectMapper (5.2.1):
+    - Alamofire (~> 4.7)
+    - ObjectMapper (~> 3.4)
+  - CountryPickerView (3.3.0)
+  - IQKeyboardManagerSwift (6.5.12)
+  - MarqueeLabel (4.0.5)
+  - NotificationBannerSwift (3.0.6):
+    - MarqueeLabel (~> 4.0.5)
+    - SnapKit (~> 5.0.1)
+  - ObjectMapper (3.5.3)
+  - SDWebImage (5.17.0):
+    - SDWebImage/Core (= 5.17.0)
+  - SDWebImage/Core (5.17.0)
+  - SnapKit (5.0.1)
+
+DEPENDENCIES:
+  - AlamofireObjectMapper (~> 5.2)
+  - CountryPickerView
+  - IQKeyboardManagerSwift
+  - NotificationBannerSwift (~> 3.0.0)
+  - SDWebImage (~> 5.0)
+
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - AlamofireObjectMapper
+    - CountryPickerView
+    - IQKeyboardManagerSwift
+    - MarqueeLabel
+    - NotificationBannerSwift
+    - ObjectMapper
+    - SDWebImage
+    - SnapKit
+
+SPEC CHECKSUMS:
+  Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
+  AlamofireObjectMapper: 1989f690e982b71921b9253f53a4f33a9bc00d88
+  CountryPickerView: 6322ada32a80b0cd721b0267282a5c24f406f263
+  IQKeyboardManagerSwift: 371b08cb39664fb56030f5345c815a4ffc74bbc0
+  MarqueeLabel: 00cc0bcd087111dca575878b3531af980559707d
+  NotificationBannerSwift: 7021be2338f8f29cf424b0aca43da462bf9e2a1a
+  ObjectMapper: 97111c97e054a6ee25917662106689f0b4127b37
+  SDWebImage: 750adf017a315a280c60fde706ab1e552a3ae4e9
+  SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
+
+PODFILE CHECKSUM: b13bccc5684b149cc2c51dd7dceacee11edc61c9
+
+COCOAPODS: 1.15.2
