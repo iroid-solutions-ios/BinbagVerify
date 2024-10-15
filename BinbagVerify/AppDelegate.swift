@@ -64,23 +64,65 @@ extension UIViewController {
         self.present(alertController, animated: true)
     }
     
-    func showWaitingAlert(message: String, for sec: TimeInterval? = nil) {
+//    func showWaitingAlert(message: String, for sec: TimeInterval? = nil) {
+//        if let alertController = self.currentWaitingAlertController() {
+//            UIView.transition(with: alertController.view, duration: 0.2, options: [.transitionCrossDissolve, .curveEaseInOut], animations: {
+//                alertController.message = message
+//            }, completion: nil)
+//        } else {
+//            let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+//            alertController.view.tag = 938468347
+//            self.present(alertController, animated: true)
+//        }
+//        
+//        if let sec = sec {
+//            DispatchQueue.main.asyncAfter(deadline: .now() + sec) {
+//                self.dismissWaitingAlert()
+//            }
+//        }
+//    }
+    
+    func showWaitingAlert(message: String, for sec: TimeInterval? = nil, image: UIImage? = UIImage(resource: .icLogo)) {
         if let alertController = self.currentWaitingAlertController() {
+            // Update the message of the existing alert
             UIView.transition(with: alertController.view, duration: 0.2, options: [.transitionCrossDissolve, .curveEaseInOut], animations: {
                 alertController.message = message
             }, completion: nil)
         } else {
+            // Create a new alert controller
             let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
             alertController.view.tag = 938468347
+            
+            // Add an image view to the alert controller if image is provided
+            if let image = image {
+                let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 50, height: 50)) // Adjust the frame as needed
+                imageView.contentMode = .scaleAspectFit
+                imageView.image = image
+                
+                // Add the imageView to the alertController's view
+                alertController.view.addSubview(imageView)
+                
+                // Set auto-layout constraints for the imageView
+                imageView.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    imageView.centerXAnchor.constraint(equalTo: alertController.view.centerXAnchor),
+                    imageView.topAnchor.constraint(equalTo: alertController.view.topAnchor, constant: 16),
+                    imageView.widthAnchor.constraint(equalToConstant: 50),
+                    imageView.heightAnchor.constraint(equalToConstant: 50)
+                ])
+            }
+
             self.present(alertController, animated: true)
         }
         
+        // Automatically dismiss after a certain time interval, if specified
         if let sec = sec {
             DispatchQueue.main.asyncAfter(deadline: .now() + sec) {
                 self.dismissWaitingAlert()
             }
         }
     }
+
     
     func dismissWaitingAlert() {
         if let alertController = self.currentWaitingAlertController() {
