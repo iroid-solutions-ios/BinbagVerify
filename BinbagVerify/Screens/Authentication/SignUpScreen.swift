@@ -117,6 +117,12 @@ class SignUpScreen: UIViewController {
         } else {
             //signUpAPI(residenceId: selectResidenceId)
             if let vc = STORYBOARD.auth.instantiateViewController(withIdentifier: "ContractScreen") as? ContractScreen {
+                signUpRequest = SignUpRequest(firstName: firstNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
+                                                                lastName: lastNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
+                                                                email: emailTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
+                                                                countryCode: "+1",
+                                                                phoneNumber: phoneNumberTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines))
+                print(signUpRequest?.toJSON())
                 self.navigationController?.pushViewController(vc, animated: true)
             }
         }
@@ -183,54 +189,4 @@ extension SignUpScreen: UITextFieldDelegate {
         return true
     }
     
-}
-
-
-//MARK: - API
-extension SignUpScreen {
-    //    func signUpAPI(residenceId:String){
-    //        if Utility.isInternetAvailable(){
-    //            self.view.endEditing(true)
-    //            Utility.showIndicator()
-    //
-    //            let request = SignUpRequest(fullName: fullNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
-    //                                        email: emailAddressTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
-    //                                        dob: "\(birthDateTimeStamp)",
-    //                                        flatNo: flatNumberTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
-    //                                        address: nil,//addressNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
-    //                                        latitude: "0.0",
-    //                                        longitude: "0.0",
-    //                                        countryCode: phoneCountryCode.replacingOccurrences(of: "+", with: ""),
-    //                                        countryName: phoneNumberShortName,
-    //                                        phone: phoneNumberTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
-    //                                        emergencyCountryCode: emergencyPhoneCountryCode.replacingOccurrences(of: "+", with: ""),
-    //                                        emergencyCountryName: emergencyPhoneNumberShortName,
-    //                                        emergencyPhone: phoneNumberEmergencyTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
-    //                                        password: passwordTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
-    //                                        confirmPassword: confirmPasswordTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines))
-    //
-    //            let url = "\(registerURL)/\(residenceId)"
-    //           // let url = "\(registerURL)/65b205253e221de733b1dbe0"
-    //
-    //            AuthServices.shared.register(urlString : url, parameters: request.toJSON(),imageData: profileImageData){ (statusCode, response) in
-    //                Utility.hideIndicator()
-    //
-    //                if let res = response.loginResponse{
-    //                    Utility.saveUserData(data: res.toJSON())
-    //                    if let vc = STORYBOARD.auth.instantiateViewController(withIdentifier: "VerifyScreen") as? VerifyScreen {
-    //                        vc.phoneNumber = "\(request.countryCode ?? "") \(request.phone ?? "")"
-    //                        self.navigationController?.pushViewController(vc, animated: true)
-    //                    }
-    //                }
-    //
-    //            } failure: { [weak self](error) in
-    //                guard let selfScreen = self else { return }
-    //                Utility.hideIndicator()
-    //                Utility.showAlert(vc: selfScreen, message: error)
-    //            }
-    //        } else {
-    //            Utility.hideIndicator()
-    //            Utility.showNoInternetConnectionAlertDialog(vc: self)
-    //        }
-    //    }
 }

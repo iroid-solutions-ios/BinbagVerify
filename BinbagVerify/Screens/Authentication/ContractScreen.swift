@@ -76,6 +76,16 @@ class ContractScreen: UIViewController {
         let formattedDate = formatDate(datePicker.date, format: dd_MM_YYYY)
         birthDateTextField.text = formattedDate
         view.endEditing(true)
+        if signatureTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count ?? 0 > 0 &&
+            fullNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count ?? 0 > 0 && birthDateTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count ?? 0 > 0 &&
+            (signatureTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) !=  fullNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines))
+        {
+            continueButton.layer.opacity = 1
+            continueButton.isUserInteractionEnabled = true
+        } else {
+            continueButton.layer.opacity = 0.2
+            continueButton.isUserInteractionEnabled = false
+        }
     }
     
     func formatDate(_ date: Date, format: String) -> String {
@@ -203,13 +213,31 @@ extension ContractScreen: UITextFieldDelegate {
 extension ContractScreen :  DIVESDKDelegate {
     private func openResult(result: [String : Any]) {
         if let theJSONData = try? JSONSerialization.data(withJSONObject: result, options: [.prettyPrinted]) {
-            let theJSONText = String(data: theJSONData, encoding: .ascii)
+            //let theJSONText = String(data: theJSONData, encoding: .ascii)
             
-            let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
-            let resultVC = storyboard.instantiateViewController(withIdentifier: "Result_VC") as! Result_VC
-            resultVC.loadView()
-            resultVC.textView.text = theJSONText
-            self.navigationController?.pushViewController(resultVC, animated: true)
+            //            let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
+            //            let resultVC = storyboard.instantiateViewController(withIdentifier: "Result_VC") as! Result_VC
+            //            resultVC.loadView()
+            //            resultVC.textView.text = theJSONText
+            //            self.navigationController?.pushViewController(resultVC, animated: true)
+            
+            
+            if let documentVerificationResult = result["documentVerificationResult"] as? [String: Any],
+               let statusString = documentVerificationResult["statusString"] as? String {
+                print("Extracted statusString: \(statusString)")
+                
+                // You can pass statusString to the next screen if needed
+                if statusString == "Ok" {
+                    if let vc = STORYBOARD.verifyAccount.instantiateViewController(withIdentifier: "VerifiedScreen") as? VerifiedScreen {
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }
+                } else {
+                    if let vc = STORYBOARD.verifyAccount.instantiateViewController(withIdentifier: "VerifyRejectScreen") as? VerifyRejectScreen {
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }
+                }
+                
+            }
         }
     }
     
@@ -240,3 +268,5 @@ extension ContractScreen :  DIVESDKDelegate {
     }
 
 }
+
+

@@ -49,6 +49,7 @@ let Per_Page = 20
 let SCREEN_WIDTH = UIScreen.main.bounds.width
 let SCREEN_HEIGHT = UIScreen.main.bounds.height
 let TIMER_COUNT = 60
+var signUpRequest : SignUpRequest?
 
 var screenWidth: CGFloat {
     return UIScreen.main.bounds.width

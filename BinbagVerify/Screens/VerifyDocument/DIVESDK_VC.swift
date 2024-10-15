@@ -30,13 +30,31 @@ class DIVESDK_VC: UIViewController, DIVESDKDelegate {
     
     private func openResult(result: [String : Any]) {
         if let theJSONData = try? JSONSerialization.data(withJSONObject: result, options: [.prettyPrinted]) {
-            let theJSONText = String(data: theJSONData, encoding: .ascii)
+            //let theJSONText = String(data: theJSONData, encoding: .ascii)
             
-            let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
-            let resultVC = storyboard.instantiateViewController(withIdentifier: "Result_VC") as! Result_VC
-            resultVC.loadView()
-            resultVC.textView.text = theJSONText
-            self.navigationController?.pushViewController(resultVC, animated: true)
+            //            let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
+            //            let resultVC = storyboard.instantiateViewController(withIdentifier: "Result_VC") as! Result_VC
+            //            resultVC.loadView()
+            //            resultVC.textView.text = theJSONText
+            //            self.navigationController?.pushViewController(resultVC, animated: true)
+            
+            
+            if let documentVerificationResult = result["documentVerificationResult"] as? [String: Any],
+               let statusString = documentVerificationResult["statusString"] as? String {
+                print("Extracted statusString: \(statusString)")
+                
+                // You can pass statusString to the next screen if needed
+                if statusString == "Ok" {
+                    if let vc = STORYBOARD.verifyAccount.instantiateViewController(withIdentifier: "VerifiedScreen") as? VerifiedScreen {
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }
+                } else {
+                    if let vc = STORYBOARD.verifyAccount.instantiateViewController(withIdentifier: "VerifyRejectScreen") as? VerifyRejectScreen {
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }
+                }
+                
+            }
         }
     }
     

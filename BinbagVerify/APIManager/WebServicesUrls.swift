@@ -9,7 +9,7 @@ import Foundation
 
 //MARK: - API URLs
 
-let serverUrl = "https://dev.iroidsolutions.com:4007/api/v1/"  // dev
+let serverUrl = "https://dev.iroidsolutions.com/binbag/api/v1/"  // dev
 
 //Auth
 let loginURL = serverUrl + "auth/login"

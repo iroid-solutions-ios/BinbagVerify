@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/IDScanNet/DIVESDKIOS.git",
       "state" : {
-        "revision" : "39050e6aa17bed72b1cfbd699bff55636fb92d17",
-        "version" : "1.240826.1"
+        "revision" : "6ae2d37fefa83c8ec09fb7b7007e1cc15b885c6e",
+        "version" : "2.240919.1"
       }
     },
     {

@@ -20,12 +20,13 @@ class AuthServices {
         }
     }
     
-    func register(urlString: String,parameters: [String: Any] = [:], imageData : Data? = nil,success: @escaping (Int, Response) -> (), failure: @escaping (String) -> ()){
-        APIManager.shared.requestWithImage(method: .post, urlString: urlString, imageParameterName: "profileImage", images: imageData, videoParameterName: "", videoData: nil, audioParameterName: "", audioData: nil, bgThumbnailParameter: "", bgThumbImage: nil, videoPreviewParameter: "", videoPreview: nil, parameters: parameters)  { (statusCode, response) in
+    func register(parameters: [String: Any] = [:],success: @escaping (Int, Response) -> (), failure: @escaping (String) -> ()){
+        APIManager.shared.requestAPIWithParameters(method: .post, urlString: registerURL, parameters: parameters) { (statusCode, response) in
             success(statusCode,response)
         } failure: { (error) in
             failure(error)
         }
+
     }
     
     func editProfile(urlString: String,parameters: [String: Any] = [:], imageData : Data? = nil,success: @escaping (Int, Response) -> (), failure: @escaping (String) -> ()){

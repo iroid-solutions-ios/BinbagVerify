@@ -31,39 +31,18 @@ class LoginRequest: Mappable {
 }
 
 class SignUpRequest: Mappable {
-    var fullName: String?
+    var firstName: String?
     var email:String?
-    var dob:String?
-    var flatNo: String?
-    var address: String?
-    var latitude:String?
-    var longitude: String?
+    var lastName:String?
     var countryCode: String?
-    var countryName: String?
-    var phone:String?
-    var emergencyCountryCode: String?
-    var emergencyCountryName: String?
-    var emergencyPhone: String?
-    var password:String?
-    var confirmPassword: String?
+    var phoneNumber:String?
     
-    init(fullName: String?,email: String?,dob:String?,flatNo:String?,address: String?,latitude: String?,longitude:String?,
-         countryCode: String?,countryName:String?,phone: String?,emergencyCountryCode:String?,emergencyCountryName:String?,emergencyPhone: String?,password: String?,confirmPassword:String?) {
-        self.fullName = fullName
+    init(firstName: String?,lastName:String?,email: String?,countryCode: String?,phoneNumber: String?) {
+        self.firstName = firstName
         self.email = email
-        self.dob = dob
-        self.flatNo = flatNo
-        self.address = address
-        self.latitude = latitude
-        self.longitude = longitude
+        self.lastName = lastName
         self.countryCode = countryCode
-        self.countryName = countryName
-        self.phone = phone
-        self.emergencyCountryCode = emergencyCountryCode
-        self.emergencyCountryName = emergencyCountryName
-        self.emergencyPhone = emergencyPhone
-        self.password = password
-        self.confirmPassword = confirmPassword
+        self.phoneNumber = phoneNumber
     }
     
     required init?(map: Map) {
@@ -71,21 +50,11 @@ class SignUpRequest: Mappable {
     }
     
     func mapping(map: Map) {
-        fullName <- map["fullName"]
+        firstName <- map["firstName"]
         email <- map["email"]
-        dob <- map["dob"]
-        flatNo <- map["flatNo"]
-        address <- map["address"]
-        latitude <- map["latitude"]
-        longitude <- map["longitude"]
+        lastName <- map["lastName"]
         countryCode <- map["countryCode"]
-        countryName <- map["countryName"]
-        phone <- map["phone"]
-        emergencyCountryCode <- map["emergencyCountryCode"]
-        emergencyCountryName <- map["emergencyCountryName"]
-        emergencyPhone <- map["emergencyPhone"]
-        password <- map["password"]
-        confirmPassword <- map["confirmPassword"]
+        phoneNumber <- map["phoneNumber"]
     }
 }
 
