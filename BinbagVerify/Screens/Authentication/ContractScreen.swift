@@ -56,7 +56,7 @@ class ContractScreen: UIViewController {
         datePicker = UIDatePicker(frame: datePickerFrame)
         datePicker.backgroundColor = .white
         datePicker.datePickerMode = .date
-        datePicker.maximumDate = Calendar.current.date(byAdding: .year, value: -18, to: Date())
+        datePicker.maximumDate = Calendar.current.date(byAdding: .year, value: 0, to: Date())
         datePicker.minimumDate = Calendar.current.date(byAdding: .year, value: -150, to: Date())
         if #available(iOS 14.0, *) {
             datePicker.preferredDatePickerStyle = .wheels
@@ -77,8 +77,7 @@ class ContractScreen: UIViewController {
         birthDateTextField.text = formattedDate
         view.endEditing(true)
         if signatureTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count ?? 0 > 0 &&
-            fullNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count ?? 0 > 0 && birthDateTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count ?? 0 > 0 &&
-            (signatureTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) !=  fullNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines))
+            fullNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count ?? 0 > 0 && birthDateTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count ?? 0 > 0
         {
             continueButton.layer.opacity = 1
             continueButton.isUserInteractionEnabled = true
@@ -152,8 +151,8 @@ class ContractScreen: UIViewController {
     @objc func textFieldTextChanged(_ textField: UITextField) {
         if textField == signatureTextField || textField  == fullNameTextField || textField  == birthDateTextField {
             if signatureTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count ?? 0 > 0 &&
-                fullNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count ?? 0 > 0 && birthDateTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count ?? 0 > 0 &&
-                (signatureTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) !=  fullNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines))
+                fullNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count ?? 0 > 0 && birthDateTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count ?? 0 > 0
+                
             {
                 continueButton.layer.opacity = 1
                 continueButton.isUserInteractionEnabled = true
@@ -181,9 +180,11 @@ extension ContractScreen {
             return AuthenticationAlertMessage.SIGNATURE
         } else if fullNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count == 0 {
             return AuthenticationAlertMessage.FULL_NAME
-        } else if signatureTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) == fullNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) {
-            return AuthenticationAlertMessage.SIGNATURE_AND_FULL_NAME
-        } else if birthDateTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count == 0 {
+        } 
+//        else if signatureTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) == fullNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) {
+//            return AuthenticationAlertMessage.SIGNATURE_AND_FULL_NAME
+//        } 
+        else if birthDateTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count == 0 {
             return AuthenticationAlertMessage.BIRTHDATE
         }
         return nil
