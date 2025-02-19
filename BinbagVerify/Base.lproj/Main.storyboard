@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="tCW-7n-j2x">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="tCW-7n-j2x">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -189,9 +189,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Edn-no-LoZ">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Edn-no-LoZ">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" semanticContentAttribute="forceRightToLeft" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="E2m-IL-r3j" customClass="dateSportButton" customModule="BinbagVerify" customModuleProvider="target">
@@ -227,11 +226,15 @@
                         <viewLayoutGuide key="safeArea" id="0CE-qL-MFC"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstAttribute="bottom" secondItem="Edn-no-LoZ" secondAttribute="bottom" id="1iK-mh-SLh"/>
                             <constraint firstItem="drI-aZ-Wrb" firstAttribute="top" secondItem="0CE-qL-MFC" secondAttribute="top" constant="8" id="9Sv-oa-R15"/>
                             <constraint firstItem="0CE-qL-MFC" firstAttribute="trailing" secondItem="drI-aZ-Wrb" secondAttribute="trailing" constant="16" id="CjD-5d-TWc"/>
+                            <constraint firstItem="Edn-no-LoZ" firstAttribute="leading" secondItem="0CE-qL-MFC" secondAttribute="leading" id="Ldi-bb-tbq"/>
+                            <constraint firstItem="Edn-no-LoZ" firstAttribute="top" secondItem="Eh5-ML-q5B" secondAttribute="top" id="Ltg-QV-21o"/>
                             <constraint firstItem="0CE-qL-MFC" firstAttribute="trailing" secondItem="E2m-IL-r3j" secondAttribute="trailing" constant="16" id="lB3-Fu-oeA"/>
                             <constraint firstItem="0CE-qL-MFC" firstAttribute="bottom" secondItem="E2m-IL-r3j" secondAttribute="bottom" constant="20" id="sF5-G0-N8U"/>
                             <constraint firstItem="E2m-IL-r3j" firstAttribute="leading" secondItem="0CE-qL-MFC" secondAttribute="leading" constant="16" id="ty6-Hh-ZvI"/>
+                            <constraint firstItem="Edn-no-LoZ" firstAttribute="trailing" secondItem="0CE-qL-MFC" secondAttribute="trailing" id="vdV-wH-Gmc"/>
                         </constraints>
                     </view>
                     <connections>
@@ -245,11 +248,6 @@
             <point key="canvasLocation" x="973" y="-35"/>
         </scene>
     </scenes>
-    <designables>
-        <designable name="E2m-IL-r3j">
-            <size key="intrinsicContentSize" width="97.333333333333329" height="24"/>
-        </designable>
-    </designables>
     <resources>
         <image name="ic_right_arrow" width="24.333333969116211" height="24"/>
         <namedColor name="#0166F4">

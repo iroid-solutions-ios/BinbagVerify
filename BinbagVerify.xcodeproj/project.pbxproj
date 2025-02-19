@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0CCBC0E72D65F4250038B035 /* Intoduction.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 0CCBC0E62D65F4250038B035 /* Intoduction.mp4 */; };
 		2CDF3069CAADC224F7D01573 /* Pods_BinbagVerify.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F3A6D02EAB3E7CBB889EE77 /* Pods_BinbagVerify.framework */; };
 		89124D262C638DFF00449D55 /* DIVEOnlineSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 89124D252C638DFF00449D55 /* DIVEOnlineSDK */; };
 		89124D282C638DFF00449D55 /* DIVESDK in Frameworks */ = {isa = PBXBuildFile; productRef = 89124D272C638DFF00449D55 /* DIVESDK */; };
@@ -101,7 +102,6 @@
 		895A362C2CB3EBBE00FBD06D /* Reponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 895A35D42CB3EBBE00FBD06D /* Reponse.swift */; };
 		895A362D2CB3EBBE00FBD06D /* RequestModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 895A35D52CB3EBBE00FBD06D /* RequestModel.swift */; };
 		895A362E2CB3EBBE00FBD06D /* ResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 895A35D62CB3EBBE00FBD06D /* ResponseModel.swift */; };
-		895A36302CB3F56F00FBD06D /* Intoduction.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 895A362F2CB3F56F00FBD06D /* Intoduction.mp4 */; };
 		895A36322CB3F9E400FBD06D /* SignUpScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 895A36312CB3F9E400FBD06D /* SignUpScreen.swift */; };
 		89A705AC2A691DA50018F69C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89A705AB2A691DA50018F69C /* AppDelegate.swift */; };
 		89A705B02A691DA50018F69C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89A705AF2A691DA50018F69C /* ViewController.swift */; };
@@ -118,6 +118,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0CCBC0E62D65F4250038B035 /* Intoduction.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Intoduction.mp4; sourceTree = "<group>"; };
 		4C496905D542671F2ADDDA15 /* Pods-BinbagVerify.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BinbagVerify.release.xcconfig"; path = "Target Support Files/Pods-BinbagVerify/Pods-BinbagVerify.release.xcconfig"; sourceTree = "<group>"; };
 		7F3A6D02EAB3E7CBB889EE77 /* Pods_BinbagVerify.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BinbagVerify.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		89166D3D2CB912EF001CD894 /* ContractScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractScreen.swift; sourceTree = "<group>"; };
@@ -211,7 +212,6 @@
 		895A35D42CB3EBBE00FBD06D /* Reponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reponse.swift; sourceTree = "<group>"; };
 		895A35D52CB3EBBE00FBD06D /* RequestModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestModel.swift; sourceTree = "<group>"; };
 		895A35D62CB3EBBE00FBD06D /* ResponseModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResponseModel.swift; sourceTree = "<group>"; };
-		895A362F2CB3F56F00FBD06D /* Intoduction.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Intoduction.mp4; sourceTree = "<group>"; };
 		895A36312CB3F9E400FBD06D /* SignUpScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpScreen.swift; sourceTree = "<group>"; };
 		89A705A82A691DA50018F69C /* BinbagVerify.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BinbagVerify.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		89A705AB2A691DA50018F69C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -512,7 +512,7 @@
 				89A705B62A691DA60018F69C /* LaunchScreen.storyboard */,
 				89A705B12A691DA50018F69C /* Main.storyboard */,
 				89A705AF2A691DA50018F69C /* ViewController.swift */,
-				895A362F2CB3F56F00FBD06D /* Intoduction.mp4 */,
+				0CCBC0E62D65F4250038B035 /* Intoduction.mp4 */,
 				89A705B42A691DA60018F69C /* Assets.xcassets */,
 				895A356B2CB3E8BE00FBD06D /* Screens */,
 				895A35802CB3EBBE00FBD06D /* APIManager */,
@@ -624,10 +624,10 @@
 				895A35712CB3E9D000FBD06D /* Authentication.storyboard in Resources */,
 				89A705B82A691DA60018F69C /* LaunchScreen.storyboard in Resources */,
 				89A705B52A691DA60018F69C /* Assets.xcassets in Resources */,
+				0CCBC0E72D65F4250038B035 /* Intoduction.mp4 in Resources */,
 				89B68DD92CB8F71F006629DC /* SFPRODISPLAYBOLD.OTF in Resources */,
 				89A705C22A691F060018F69C /* ConfigDemo.json in Resources */,
 				895A356F2CB3E95600FBD06D /* VerifyDocument.storyboard in Resources */,
-				895A36302CB3F56F00FBD06D /* Intoduction.mp4 in Resources */,
 				89A705B32A691DA50018F69C /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
