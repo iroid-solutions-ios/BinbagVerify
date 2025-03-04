@@ -9,10 +9,10 @@ target 'BinbagVerify' do
 
 
   pod 'IQKeyboardManagerSwift'
-  pod 'AlamofireObjectMapper', '~> 5.2'
-  pod 'SDWebImage', '~> 5.0'
+  pod 'SDWebImage'
   pod 'CountryPickerView'
   pod 'NotificationBannerSwift', '~> 3.0.0'
+  pod 'AlamofireObjectMapper', '~> 5.2'
 
 
 end
