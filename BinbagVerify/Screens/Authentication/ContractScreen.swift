@@ -165,11 +165,14 @@ class ContractScreen: UIViewController {
     
     //MARK: - IBActions
     @IBAction func onApproveAndContinue(_ sender: Any) {
-        if let message = checkValidation() {
-            Utility.showAlert(vc: self, message: message)
-        } else {
-            self.sdk?.start(from: self)
-        }
+//        if let message = checkValidation() {
+//            Utility.showAlert(vc: self, message: message)
+//        } else {
+            let vc = IDScanDocumentTypeVC()
+            self.navigationController?.pushViewController(vc, animated: true)
+        
+//       self.sdk?.start(from: self)
+//       }
     }
     
 }

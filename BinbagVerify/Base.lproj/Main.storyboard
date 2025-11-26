@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="tCW-7n-j2x">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="DQR-GU-oZx">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -9,6 +9,11 @@
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
+    <customFonts key="customFonts">
+        <array key="HelveticaNeue.ttc">
+            <string>HelveticaNeue</string>
+        </array>
+    </customFonts>
     <scenes>
         <!--DVS SDK-->
         <scene sceneID="8wM-l9-XZ6">
@@ -182,6 +187,35 @@
             <point key="canvasLocation" x="3120" y="-35"/>
         </scene>
         <!--View Controller-->
+        <scene sceneID="40S-yx-TBb">
+            <objects>
+                <viewController id="zN5-ta-xKy" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="i3S-MW-hdj">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jAn-YD-lmn">
+                                <rect key="frame" x="159" y="421" width="75" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                                <connections>
+                                    <action selector="createDocumentForSigning:" destination="zN5-ta-xKy" eventType="touchUpInside" id="af8-ob-Bde"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="3Hz-ct-J9W"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="jAn-YD-lmn" firstAttribute="centerX" secondItem="3Hz-ct-J9W" secondAttribute="centerX" id="AeN-Vn-OMO"/>
+                            <constraint firstItem="jAn-YD-lmn" firstAttribute="centerY" secondItem="3Hz-ct-J9W" secondAttribute="centerY" id="u2Z-2a-GWN"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Vwf-Wn-HZO" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="147" y="-49"/>
+        </scene>
+        <!--View Controller-->
         <scene sceneID="Icq-z3-ES0">
             <objects>
                 <viewController storyboardIdentifier="ViewController" id="tCW-7n-j2x" customClass="ViewController" customModule="BinbagVerify" customModuleProvider="target" sceneMemberID="viewController">
@@ -246,6 +280,21 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IHw-J9-jQF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="973" y="-35"/>
+        </scene>
+        <!--Face Verification Controller-->
+        <scene sceneID="a25-bm-m28">
+            <objects>
+                <viewController storyboardIdentifier="FaceVerificationController" id="DQR-GU-oZx" customClass="FaceVerificationController" customModule="BinbagVerify" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="tPd-ya-yI0">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="M9h-nS-xe9"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ptn-28-cuv" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-645" y="-79"/>
         </scene>
     </scenes>
     <resources>
