@@ -25,6 +25,7 @@ final class IDScanStepsVC: UIViewController {
     private let stepsStack = UIStackView()
     private var stepCards: [StepCardView] = []
     private let continueButton = UIButton(type: .system)
+    private let submitButton = UIButton(type: .system)
     private let backButton = UIButton(type: .system)
     private let resetButton = UIButton(type: .system)
     private let startButton = UIButton(type: .system)
@@ -116,6 +117,17 @@ final class IDScanStepsVC: UIViewController {
         continueButton.addTarget(self, action: #selector(onContinue), for: .touchUpInside)
         continueButton.titleLabel?.font = .systemFont(ofSize: 20, weight: .semibold)
         
+        // Submit button
+        submitButton.setTitle("Submit", for: .normal)
+        submitButton.translatesAutoresizingMaskIntoConstraints = false
+        submitButton.backgroundColor = UIColor.systemBlue
+        submitButton.setTitleColor(.white, for: .normal)
+        submitButton.layer.cornerRadius = 8
+        submitButton.heightAnchor.constraint(equalToConstant: 48).isActive = true
+        submitButton.addTarget(self, action: #selector(onSubmit), for: .touchUpInside)
+        submitButton.titleLabel?.font = .systemFont(ofSize: 20, weight: .semibold)
+        submitButton.isHidden = true
+        
         // Back button
         backButton.setTitle("Back", for: .normal)
         backButton.translatesAutoresizingMaskIntoConstraints = false
@@ -147,7 +159,7 @@ final class IDScanStepsVC: UIViewController {
         resetButton.titleLabel?.font = .systemFont(ofSize: 20, weight: .semibold)
         
         // Layout
-        let buttons = UIStackView(arrangedSubviews: [backButton, resetButton, continueButton, startButton])
+        let buttons = UIStackView(arrangedSubviews: [backButton, resetButton, continueButton, startButton, submitButton])
         buttons.axis = .horizontal
         buttons.spacing = 16
         buttons.distribution = .fillEqually
@@ -193,6 +205,12 @@ final class IDScanStepsVC: UIViewController {
         }
     }
     
+    @objc private func onSubmit() {
+        if let vc = STORYBOARD.verifyAccount.instantiateViewController(withIdentifier: "VerifiedScreen") as? VerifiedScreen {
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+    
     @objc private func startFlow() {
         // If nothing started yet, mark first as in-progress
         let hasAnyActiveOrDone = stepStatuses.contains { status in
@@ -232,16 +250,40 @@ final class IDScanStepsVC: UIViewController {
             guard let self else { return }
             // Mark current as completed
             if index < self.stepStatuses.count { self.stepStatuses[index] = .completed }
-            self.currentStepIndex += 1
-            // Mark next as in-progress (if any)
-            if self.currentStepIndex < self.stepStatuses.count {
-                self.stepStatuses[self.currentStepIndex] = .inProgress
+            // Find the next step that is not completed (skip already-completed steps)
+            let nextIndex = self.stepStatuses.enumerated().first(where: { pair in
+                let i = pair.offset
+                let s = pair.element
+                if i <= index { return false }
+                if case .completed = s { return false }
+                return true
+            })?.offset
+            if let next = nextIndex {
+                self.currentStepIndex = next
+                // Only mark as in-progress if not already completed
+                if case .completed = self.stepStatuses[next] {
+                    // no-op
+                } else {
+                    self.stepStatuses[next] = .inProgress
+                }
+            } else {
+                // No remaining steps to scan ahead of current; stay or pop back after face
+                self.currentStepIndex = min(index + 1, self.stepStatuses.count)
             }
             self.updateStepCards()
             self.refreshDocTypeTitle()
             self.updateBottomButtonsVisibility()
-            // Auto-advance to the next step while user stays in camera flow
-            self.openCapture(for: self.currentStepIndex)
+            // If face step, return to steps screen after saving image
+            if step.title.lowercased().contains("face") {
+                self.navigationController?.popToViewController(self, animated: true)
+                return
+            }
+            // If there is a next non-completed step, auto-advance; otherwise return to steps
+            if let next = nextIndex {
+                self.openCapture(for: next)
+            } else {
+                self.navigationController?.popToViewController(self, animated: true)
+            }
         }
         navigationController?.pushViewController(captureVC, animated: true)
     }
@@ -264,7 +306,7 @@ final class IDScanStepsVC: UIViewController {
         stepsStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
         for (idx, step) in steps.enumerated() {
             let card = StepCardView()
-            let assetImage = imageForStep(step: step)
+            let assetImage = capturedImages[idx] ?? imageForStep(step: step)
             let status = stepStatuses[idx]
             card.configure(stepNumber: idx + 1, title: step.title, image: assetImage, status: status)
             card.tag = idx
@@ -281,7 +323,8 @@ final class IDScanStepsVC: UIViewController {
         }
         for (idx, card) in stepCards.enumerated() {
             let step = steps[idx]
-            card.configure(stepNumber: idx + 1, title: step.title, image: imageForStep(step: step), status: stepStatuses[idx])
+            let previewImage = capturedImages[idx] ?? imageForStep(step: step)
+            card.configure(stepNumber: idx + 1, title: step.title, image: previewImage, status: stepStatuses[idx])
             card.tag = idx
         }
         updateBottomButtonsVisibility()
@@ -359,10 +402,26 @@ final class IDScanStepsVC: UIViewController {
     
     private func updateBottomButtonsVisibility() {
         let anyCompleted = stepStatuses.contains { if case .completed = $0 { return true } else { return false } }
-        // Show Continue/Reset when any completed, otherwise show Start
-        continueButton.isHidden = !anyCompleted
-        resetButton.isHidden = !anyCompleted
-        startButton.isHidden = anyCompleted
+        let allCompleted = stepStatuses.count > 0 && stepStatuses.allSatisfy { if case .completed = $0 { return true } else { return false } }
+        if allCompleted {
+            // Final state: show Submit, hide Continue/Start
+            submitButton.isHidden = false
+            continueButton.isHidden = true
+            startButton.isHidden = true
+            resetButton.isHidden = false
+        } else if anyCompleted {
+            // Mid-flow: show Continue and Reset
+            submitButton.isHidden = true
+            continueButton.isHidden = false
+            startButton.isHidden = true
+            resetButton.isHidden = false
+        } else {
+            // Pre-flow: only Start
+            submitButton.isHidden = true
+            continueButton.isHidden = true
+            startButton.isHidden = false
+            resetButton.isHidden = true
+        }
     }
 }
 

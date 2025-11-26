@@ -61,6 +61,39 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
     private var isAdjustingExposure = true
     private var isReadyToScan = true
     
+    // Liveness
+    private enum LivenessStage {
+        case center
+        case lookLeft
+        case lookRight
+        case center2
+        case blink
+        case done
+    }
+    private var livenessStage: LivenessStage = .center
+    private var livenessPassed = false
+    private var livenessLabel = UILabel()
+    private var frameCounter = 0
+    private var lastLeftEAR: CGFloat = 0.0
+    private var lastRightEAR: CGFloat = 0.0
+    private var blinkRegistered = false
+    private var blinkClosing = false
+    private var lastYaw: Float = 0.0
+    private var faceQuality: Float = 0.0
+    private var brightnessHistory: [Double] = []
+    private let maxBrightnessHistory = 40
+    // Liveness control
+    private var stageFrameCount = 0
+    private var wrongFrameCount = 0
+    private var missingFaceCount = 0
+    private let maxStageFrames = 60          // ~6 seconds (analyze every ~0.1s)
+    private let maxWrongFrames = 30          // ~3 seconds of wrong movement
+    private let maxMissingFaceFrames = 20    // ~2 seconds without a face
+    private var stageHoldCount = 0
+    private let holdFramesCenter = 5         // ~0.5s dwell in center
+    private let holdFramesTurn = 5           // ~0.5s dwell on each side
+    private var faceCentered = false
+    
     // One-time front hint
     private var didPlayFrontHint = false
     private let frontHintContainer = UIView()
@@ -112,6 +145,16 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
         super.viewDidAppear(animated)
         playFrontHintIfNeeded()
         playBackHintIfNeeded()
+        if step.title.localizedCaseInsensitiveContains("face") {
+            livenessStage = .center
+            livenessPassed = false
+            blinkRegistered = false
+            updateLivenessLabel("center your face")
+            livenessLabel.alpha = 1.0
+            stageFrameCount = 0
+            wrongFrameCount = 0
+            missingFaceCount = 0
+        }
     }
     
     // MARK: - Camera setup
@@ -277,6 +320,14 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
         lowLightLabel.translatesAutoresizingMaskIntoConstraints = false
         previewContainer.addSubview(lowLightLabel)
         
+        // Liveness guidance
+        livenessLabel.text = ""
+        livenessLabel.textColor = .white
+        livenessLabel.alpha = 0.0
+        livenessLabel.font = .systemFont(ofSize: 18, weight: .semibold)
+        livenessLabel.translatesAutoresizingMaskIntoConstraints = false
+        previewContainer.addSubview(livenessLabel)
+        
         NSLayoutConstraint.activate([
             overlayView.leadingAnchor.constraint(equalTo: previewContainer.leadingAnchor),
             overlayView.trailingAnchor.constraint(equalTo: previewContainer.trailingAnchor),
@@ -285,6 +336,9 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
             
             lowLightLabel.bottomAnchor.constraint(equalTo: previewContainer.bottomAnchor, constant: -12),
             lowLightLabel.centerXAnchor.constraint(equalTo: previewContainer.centerXAnchor),
+            
+            livenessLabel.bottomAnchor.constraint(equalTo: lowLightLabel.topAnchor, constant: -8),
+            livenessLabel.centerXAnchor.constraint(equalTo: previewContainer.centerXAnchor),
         ])
     }
     
@@ -469,7 +523,13 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
                     finalImage = UIImage(data: data)
                 }
             } else {
-                finalImage = UIImage(data: data)
+                // Face-only crop
+                if let face = detectBestFace(in: ci),
+                   let cropped = cropFace(image: ci, face: face, padding: 0.35) {
+                    finalImage = cropped
+                } else {
+                    finalImage = UIImage(data: data)
+                }
             }
         }
         DispatchQueue.main.async { [weak self] in
@@ -498,6 +558,44 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
         } catch {
             return nil
         }
+    }
+    
+    // MARK: - Vision face detection on captured image (for cropping)
+    private func detectBestFace(in image: CIImage) -> VNFaceObservation? {
+        let req = VNDetectFaceRectanglesRequest()
+        let handler = VNImageRequestHandler(ciImage: image, options: [:])
+        do {
+            try handler.perform([req])
+            return (req.results as? [VNFaceObservation])?.first
+        } catch {
+            return nil
+        }
+    }
+    
+    private func cropFace(image: CIImage, face: VNFaceObservation, padding: CGFloat) -> UIImage? {
+        let extent = image.extent
+        // boundingBox is normalized with origin at lower-left
+        let bb = face.boundingBox
+        var x = bb.origin.x * extent.width
+        var y = bb.origin.y * extent.height
+        var w = bb.size.width * extent.width
+        var h = bb.size.height * extent.height
+        
+        // Pad
+        let padX = padding * w
+        let padY = padding * h
+        x -= padX
+        y -= padY
+        w += 2 * padX
+        h += 2 * padY
+        
+        var cropRect = CGRect(x: x, y: y, width: w, height: h)
+        cropRect = cropRect.intersection(extent)
+        guard !cropRect.isNull, cropRect.width > 10, cropRect.height > 10 else { return nil }
+        
+        let cropped = image.cropped(to: cropRect)
+        guard let cg = ciContext.createCGImage(cropped, from: cropped.extent) else { return nil }
+        return UIImage(cgImage: cg, scale: 1.0, orientation: .up)
     }
     
     private func perspectiveCorrect(image: CIImage, with rect: VNRectangleObservation) -> UIImage? {
@@ -532,21 +630,39 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
               let exif = metadata[kCGImagePropertyExifDictionary] as? [CFString: Any],
               let brightness = exif[kCGImagePropertyExifBrightnessValue] as? Double else { return }
         brightnessValue = brightness
+        brightnessHistory.append(brightness)
+        if brightnessHistory.count > maxBrightnessHistory {
+            brightnessHistory.removeFirst(brightnessHistory.count - maxBrightnessHistory)
+        }
         
-        let goodLight = brightness > -0.25
+        // TEMP: disable light validation (always treat light as good)
+        // let goodLight = brightness > -0.25
+        let goodLight = true
         let stable = !(isAdjustingFocus || isAdjustingExposure)
-        var conditionOk = goodLight && stable
+        // var conditionOk = goodLight && stable
+        var conditionOk = /*goodLight &&*/ stable
         if step.title.localizedCaseInsensitiveContains("back") {
             if documentType != .internationalID {
                 conditionOk = conditionOk && barcodeDetected
             }
         } else if step.title.localizedCaseInsensitiveContains("face") {
-            conditionOk = conditionOk && faceDetected
+            // Run Vision-based face analysis periodically
+            frameCounter &+= 1
+            if frameCounter % 2 == 0 {
+                analyzeFaceForLiveness(sampleBuffer)
+            }
+            let brightnessStd = brightnessStdDev()
+            let qualityOK = faceQuality == 0 ? true : (faceQuality >= 0.45)
+            let spoofRiskLow = qualityOK && brightnessStd >= 0.06
+            conditionOk = conditionOk && livenessPassed && spoofRiskLow
         }
         
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.lowLightLabel.alpha = goodLight ? 0.0 : 1.0
+            if self.step.title.localizedCaseInsensitiveContains("face") {
+                self.livenessLabel.alpha = 1.0
+            }
             
             // progress animation around cutout
             let delta: CGFloat = conditionOk ? 0.06 : -0.12
@@ -562,6 +678,256 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
                 self.photoOutput.capturePhoto(with: settings, delegate: self)
             }
         }
+    }
+    
+    // MARK: - Vision liveness (Face)
+    private func analyzeFaceForLiveness(_ sampleBuffer: CMSampleBuffer) {
+        guard step.title.localizedCaseInsensitiveContains("face"),
+              let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+        
+        let orientation = cgImageOrientationForCurrentVideo()
+        let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: orientation, options: [:])
+        
+        let landmarksReq = VNDetectFaceLandmarksRequest()
+        let qualityReq = VNDetectFaceCaptureQualityRequest()
+        
+        do {
+            try handler.perform([landmarksReq, qualityReq])
+        } catch {
+            return
+        }
+        
+        if let obs = (landmarksReq.results as? [VNFaceObservation])?.first {
+            faceDetected = true
+            missingFaceCount = 0
+            // Update centeredness in normalized image space
+            let cx = obs.boundingBox.midX
+            faceCentered = abs(CGFloat(cx) - 0.5) <= 0.10
+            
+            // Update capture quality if provided
+            if let q = obs.faceCaptureQuality {
+                faceQuality = q
+            } else if let q2 = (qualityReq.results as? [VNFaceObservation])?.first?.faceCaptureQuality {
+                faceQuality = q2
+            }
+            
+            // Head yaw (radians). Positive ~ turn right, Negative ~ turn left.
+            if let yaw = obs.yaw?.floatValue {
+                lastYaw = yaw
+            }
+            
+            // Blink detection via eye opening ratio (bounding box height/width) on both eyes
+            var leftEAR: CGFloat = lastLeftEAR
+            var rightEAR: CGFloat = lastRightEAR
+            if let lm = obs.landmarks {
+                if let l = lm.leftEye?.normalizedPoints {
+                    leftEAR = eyeOpenRatio(points: l)
+                }
+                if let r = lm.rightEye?.normalizedPoints {
+                    rightEAR = eyeOpenRatio(points: r)
+                }
+            }
+            let ear = min(leftEAR, rightEAR)
+            // Simple state machine: detect close then re-open
+            let closeThresh: CGFloat = 0.14
+            let openThresh: CGFloat = 0.22
+            if !blinkRegistered {
+                if !blinkClosing {
+                    if ear < closeThresh {
+                        blinkClosing = true
+                    }
+                } else {
+                    if ear > openThresh {
+                        blinkRegistered = true
+                        blinkClosing = false
+                    }
+                }
+            }
+            // Smooth last EARs a bit to reduce jitter
+            lastLeftEAR = lastLeftEAR * 0.6 + leftEAR * 0.4
+            lastRightEAR = lastRightEAR * 0.6 + rightEAR * 0.4
+            
+            // Advance liveness stages
+            advanceLivenessIfNeeded(yaw: lastYaw, blinked: blinkRegistered)
+        } else {
+            faceDetected = false
+            missingFaceCount += 1
+            if missingFaceCount > maxMissingFaceFrames {
+                resetLiveness()
+            }
+        }
+    }
+    
+    private func advanceLivenessIfNeeded(yaw: Float, blinked: Bool) {
+        // Tolerances
+        let centerTol: Float = 0.15
+        let leftThresh: Float = -0.35
+        let rightThresh: Float = 0.35
+        
+        // Match UI directions for mirrored selfie preview
+        let mirrored = previewLayer?.connection?.isVideoMirrored == true
+        let y = mirrored ? -yaw : yaw
+        
+        stageFrameCount &+= 1
+        if stageFrameCount > maxStageFrames || wrongFrameCount > maxWrongFrames {
+            resetLiveness()
+            return
+        }
+        
+        switch livenessStage {
+        case .center:
+            if abs(y) <= centerTol && faceCentered {
+                stageHoldCount &+= 1
+                if stageHoldCount >= holdFramesCenter {
+                    livenessStage = .lookRight
+                    stageFrameCount = 0
+                    stageHoldCount = 0
+                    wrongFrameCount = 0
+                    DispatchQueue.main.async { self.updateLivenessLabel("turn head right >>") }
+                } else {
+                    DispatchQueue.main.async { self.updateLivenessLabel("center your face") }
+                }
+            } else {
+                stageHoldCount = 0
+                DispatchQueue.main.async { self.updateLivenessLabel("center your face") }
+            }
+        case .lookLeft:
+            if y <= leftThresh {
+                stageHoldCount &+= 1
+                if stageHoldCount >= holdFramesTurn {
+                    livenessStage = .center2
+                    stageFrameCount = 0
+                    stageHoldCount = 0
+                    wrongFrameCount = 0
+                    DispatchQueue.main.async { self.updateLivenessLabel("center your face") }
+                } else {
+                    DispatchQueue.main.async { self.updateLivenessLabel("<< turn head left") }
+                }
+            } else {
+                if y >= rightThresh { wrongFrameCount &+= 1 }
+                stageHoldCount = 0
+                DispatchQueue.main.async { self.updateLivenessLabel("<< turn head left") }
+            }
+        case .lookRight:
+            if y >= rightThresh {
+                stageHoldCount &+= 1
+                if stageHoldCount >= holdFramesTurn {
+                    livenessStage = .lookLeft
+                    stageFrameCount = 0
+                    stageHoldCount = 0
+                    wrongFrameCount = 0
+                    DispatchQueue.main.async { self.updateLivenessLabel("<< turn head left") }
+                } else {
+                    DispatchQueue.main.async { self.updateLivenessLabel("turn head right >>") }
+                }
+            } else {
+                if y <= leftThresh { wrongFrameCount &+= 1 }
+                stageHoldCount = 0
+                DispatchQueue.main.async { self.updateLivenessLabel("turn head right >>") }
+            }
+        case .center2:
+            if abs(y) <= centerTol && faceCentered {
+                stageHoldCount &+= 1
+                if stageHoldCount >= holdFramesCenter {
+                    livenessStage = .blink
+                    stageFrameCount = 0
+                    stageHoldCount = 0
+                    wrongFrameCount = 0
+                    DispatchQueue.main.async { self.updateLivenessLabel("blink once") }
+                } else {
+                    DispatchQueue.main.async { self.updateLivenessLabel("center your face") }
+                }
+            } else {
+                stageHoldCount = 0
+                DispatchQueue.main.async { self.updateLivenessLabel("center your face") }
+            }
+        case .blink:
+            // Prefer centered when blinking
+            if blinked && abs(y) <= centerTol && faceCentered {
+                livenessStage = .done
+                livenessPassed = true
+                DispatchQueue.main.async {
+                    self.updateLivenessLabel("all good")
+                    // Immediate capture once liveness finishes for face
+                    if !self.isCapturing {
+                        self.isCapturing = true
+                        let settings = AVCapturePhotoSettings()
+                        if self.videoDevice?.isFlashAvailable == true {
+                            settings.flashMode = self.isTorchOn ? .off : .auto
+                        }
+                        self.photoOutput.capturePhoto(with: settings, delegate: self)
+                    }
+                }
+            } else {
+                if y >= rightThresh || y <= leftThresh { wrongFrameCount &+= 1 }
+                DispatchQueue.main.async { self.updateLivenessLabel("blink once") }
+            }
+        case .done:
+            DispatchQueue.main.async { self.updateLivenessLabel("all good") }
+        }
+    }
+    
+    private func resetLiveness() {
+        livenessStage = .center
+        livenessPassed = false
+        blinkRegistered = false
+        blinkClosing = false
+        stageFrameCount = 0
+        wrongFrameCount = 0
+        updateLivenessLabel("center your face")
+    }
+    
+    private func updateLivenessLabel(_ text: String) {
+        // Keep it very short and actionable; ensure main-thread UI update
+        if Thread.isMainThread {
+            //livenessLabel.text = "• " + text
+            livenessLabel.text = text
+        } else {
+            DispatchQueue.main.async { [weak self] in
+               // self?.livenessLabel.text = "• " + text
+                self?.livenessLabel.text = text
+            }
+        }
+    }
+    
+    private func brightnessStdDev() -> Double {
+        guard brightnessHistory.count >= 8 else { return 0 }
+        let mean = brightnessHistory.reduce(0, +) / Double(brightnessHistory.count)
+        let variance = brightnessHistory.reduce(0) { $0 + pow($1 - mean, 2) } / Double(brightnessHistory.count)
+        return sqrt(variance)
+    }
+    
+    private func cgImageOrientationForCurrentVideo() -> CGImagePropertyOrientation {
+        // Default to portrait
+        if let connection = previewLayer?.connection {
+            switch connection.videoOrientation {
+            case .portrait: return .right
+            case .portraitUpsideDown: return .left
+            case .landscapeLeft: return .up
+            case .landscapeRight: return .down
+            @unknown default: return .right
+            }
+        }
+        return .right
+    }
+    
+    private func eyeOpenRatio(points: [CGPoint]) -> CGFloat {
+        // Robust openness metric: eye bbox height / width, independent of point ordering
+        guard !points.isEmpty else { return 0.3 }
+        var minX = CGFloat.greatestFiniteMagnitude
+        var maxX = -CGFloat.greatestFiniteMagnitude
+        var minY = CGFloat.greatestFiniteMagnitude
+        var maxY = -CGFloat.greatestFiniteMagnitude
+        for p in points {
+            if p.x < minX { minX = p.x }
+            if p.x > maxX { maxX = p.x }
+            if p.y < minY { minY = p.y }
+            if p.y > maxY { maxY = p.y }
+        }
+        let width = max(maxX - minX, 1e-5)
+        let height = maxY - minY
+        let ratio = height / width
+        return max(0, min(1, ratio))
     }
     
     // MARK: - Metadata (PDF417 / Face)
