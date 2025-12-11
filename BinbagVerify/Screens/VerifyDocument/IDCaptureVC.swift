@@ -67,7 +67,6 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
         case lookLeft
         case lookRight
         case center2
-        case blink
         case done
     }
     private var livenessStage: LivenessStage = .center
@@ -82,6 +81,21 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
     private var faceQuality: Float = 0.0
     private var brightnessHistory: [Double] = []
     private let maxBrightnessHistory = 40
+    // Document rectangle detection (live)
+    private var rectDetected = false
+    private var rectAspectOK = false
+    private var rectFillOK = false
+    private var rectAngleOK = false
+    private var lastRectObservation: VNRectangleObservation?
+    // MRZ detection for passport/international ID back
+    private var mrzDetected = false
+    private var mrzText: String = ""
+    // Rectangle stability + overlay
+    private var rectMaskLayer = CAShapeLayer()
+    private var rectPolygonPath: UIBezierPath?
+    private var lastFiveRectangles: [VNRectangleObservation] = []
+    private var lastCapturedRectangle: VNRectangleObservation?
+    private var rectStable = false
     // Liveness control
     private var stageFrameCount = 0
     private var wrongFrameCount = 0
@@ -124,16 +138,15 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
         view.backgroundColor = .black
         setupTopBar()
         setupBottomBar()
-        setupPreviewContainer()
-        setupPreview()
-        setupOverlay()
-        setupFrontHintIfNeeded()
-        setupBackHintIfNeeded()
-        // No headline in camera layout
-        // Gate scanning until hint animation finishes for front/back
-        let lower = step.title.lowercased()
-        isReadyToScan = !(lower.contains("front") || lower.contains("back"))
-        startSession()
+		setupPreviewContainer()
+		setupPreview()
+		setupOverlay()
+		setupFrontHintIfNeeded()
+		setupBackHintIfNeeded()
+		// Gate scanning until hint animation finishes for front/back
+		let lower = step.title.lowercased()
+		isReadyToScan = !(lower.contains("front") || lower.contains("back"))
+		startSession()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -143,9 +156,9 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        playFrontHintIfNeeded()
-        playBackHintIfNeeded()
-        if step.title.localizedCaseInsensitiveContains("face") {
+		playFrontHintIfNeeded()
+		playBackHintIfNeeded()
+		if step.title.localizedCaseInsensitiveContains("face") {
             livenessStage = .center
             livenessPassed = false
             blinkRegistered = false
@@ -195,10 +208,16 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
             captureSession.addOutput(metadataOutput)
             metadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
             var types: [AVMetadataObject.ObjectType] = []
-            if step.title.localizedCaseInsensitiveContains("back") && documentType != .internationalID {
-                types.append(.pdf417)
+            let stepLower = step.title.lowercased()
+            if stepLower.contains("back") {
+                // Driver's license and passport card backs have PDF417 barcodes
+                if documentType == .driversLicenseOrIDCard || documentType == .passportCard {
+                    types.append(.pdf417)
+                }
+                // Passport and international ID backs do NOT require barcode - they use MRZ (text)
+                // MRZ is detected via Vision text recognition, not AVMetadata
             }
-            if step.title.localizedCaseInsensitiveContains("face") {
+            if stepLower.contains("face") {
                 types.append(.face)
             }
             metadataOutput.metadataObjectTypes = types
@@ -512,26 +531,48 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         let data = photo.fileDataRepresentation()
         var finalImage: UIImage? = nil
-        if let data, let ci = CIImage(data: data, options: [.applyOrientationProperty: true]) {
-            // For front/back document steps, attempt rectangle detection + perspective correction
-            let isFaceStep = step.title.localizedCaseInsensitiveContains("face")
-            if !isFaceStep {
-                if let rect = detectBestRectangle(in: ci), let corrected = perspectiveCorrect(image: ci, with: rect) {
-                    finalImage = corrected
-                } else {
-                    // Fallback to raw image
-                    finalImage = UIImage(data: data)
+
+        if let data {
+            // First create UIImage to get proper orientation from EXIF
+            guard let originalUIImage = UIImage(data: data) else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.isCapturing = false
+                    self?.goodProgress = 0
+                    self?.progressLayer.strokeEnd = 0
+                    self?.onCaptured?(nil)
+                    self?.onComplete?()
                 }
+                return
+            }
+
+            // Normalize image orientation - render with correct orientation applied
+            let normalizedImage = normalizeImageOrientation(originalUIImage)
+
+            let isFaceStep = step.title.localizedCaseInsensitiveContains("face")
+            
+            if isFaceStep {
+                // Selfie: keep the full frame and mirror horizontally so
+                // the preview matches what the user saw in the live camera.
+                finalImage = mirrorImageHorizontally(normalizedImage)
             } else {
-                // Face-only crop
-                if let face = detectBestFace(in: ci),
-                   let cropped = cropFace(image: ci, face: face, padding: 0.35) {
-                    finalImage = cropped
+                // Document front/back: crop to detected rectangle area (no warp),
+                // so preview shows only the ID card area, same orientation
+                // as the live capture.
+                if let cgImage = normalizedImage.cgImage {
+                    let ci = CIImage(cgImage: cgImage)
+                    if let rect = detectBestRectangle(in: ci),
+                       let cropped = cropRectangle(image: ci, rect: rect, padding: 0.10) {
+                        finalImage = cropped
+                    } else {
+                        // Fallback to full normalized image if detection fails
+                        finalImage = normalizedImage
+                    }
                 } else {
-                    finalImage = UIImage(data: data)
+                    finalImage = normalizedImage
                 }
             }
         }
+
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.isCapturing = false
@@ -541,6 +582,37 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
             self.onCaptured?(finalImage)
             self.onComplete?()
         }
+    }
+
+    /// Normalize image orientation by rendering it with the correct transform applied
+    private func normalizeImageOrientation(_ image: UIImage) -> UIImage {
+        // If already up, no need to process
+        if image.imageOrientation == .up {
+            return image
+        }
+
+        // Draw image with correct orientation
+        UIGraphicsBeginImageContextWithOptions(image.size, false, image.scale)
+        image.draw(in: CGRect(origin: .zero, size: image.size))
+        let normalizedImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        return normalizedImage ?? image
+    }
+    
+    /// Mirror image horizontally (left/right flip) so selfies look the same
+    /// as the mirrored live preview.
+    private func mirrorImageHorizontally(_ image: UIImage) -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(image.size, false, image.scale)
+        guard let ctx = UIGraphicsGetCurrentContext() else {
+            return image
+        }
+        ctx.translateBy(x: image.size.width, y: 0)
+        ctx.scaleBy(x: -1, y: 1)
+        image.draw(in: CGRect(origin: .zero, size: image.size))
+        let mirrored = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return mirrored ?? image
     }
     
     // MARK: - Vision rectangle detection on captured image
@@ -573,15 +645,19 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
     }
     
     private func cropFace(image: CIImage, face: VNFaceObservation, padding: CGFloat) -> UIImage? {
+        return cropNormalizedBoundingBox(image: image, box: face.boundingBox, padding: padding)
+    }
+    
+    /// Generic crop helper for Vision normalized bounding boxes (origin at lower-left).
+    private func cropNormalizedBoundingBox(image: CIImage, box: CGRect, padding: CGFloat) -> UIImage? {
         let extent = image.extent
-        // boundingBox is normalized with origin at lower-left
-        let bb = face.boundingBox
-        var x = bb.origin.x * extent.width
-        var y = bb.origin.y * extent.height
-        var w = bb.size.width * extent.width
-        var h = bb.size.height * extent.height
+        // Convert normalized rect (0–1, origin at lower-left) into pixel space of CIImage.
+        var x = box.origin.x * extent.width
+        var y = box.origin.y * extent.height
+        var w = box.size.width * extent.width
+        var h = box.size.height * extent.height
         
-        // Pad
+        // Optional padding around the box
         let padX = padding * w
         let padY = padding * h
         x -= padX
@@ -598,15 +674,33 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
         return UIImage(cgImage: cg, scale: 1.0, orientation: .up)
     }
     
+    /// Crop document to its detected rectangle bounding box (no perspective warp).
+    private func cropRectangle(image: CIImage, rect: VNRectangleObservation, padding: CGFloat) -> UIImage? {
+        return cropNormalizedBoundingBox(image: image, box: rect.boundingBox, padding: padding)
+    }
+    
     private func perspectiveCorrect(image: CIImage, with rect: VNRectangleObservation) -> UIImage? {
-        // Scale normalized points to image pixels
-        let extent = image.extent.size
-        func pt(_ p: CGPoint) -> CGPoint { CGPoint(x: p.x * extent.width, y: (1 - p.y) * extent.height) }
+        // CIImage from CGImage has origin at top-left (unlike raw CIImage which is bottom-left)
+        // Vision coordinates are normalized with origin at bottom-left
+        let extent = image.extent
+        let width = extent.width
+        let height = extent.height
+
+        // Convert Vision normalized coordinates to CIImage pixel coordinates
+        // Since we're using CIImage from CGImage, Y is already flipped
+        func pt(_ p: CGPoint) -> CGPoint {
+            return CGPoint(x: p.x * width + extent.origin.x,
+                           y: (1.0 - p.y) * height + extent.origin.y)
+        }
+
+        // Map Vision corners to pixel coordinates
         let topLeft = pt(rect.topLeft)
         let topRight = pt(rect.topRight)
         let bottomLeft = pt(rect.bottomLeft)
         let bottomRight = pt(rect.bottomRight)
-        
+
+        // CIPerspectiveCorrection expects corners in CIImage coordinate space
+        // inputTopLeft should be the corner that will become top-left in output
         guard let corrected = CIFilter(name: "CIPerspectiveCorrection", parameters: [
             "inputImage": image,
             "inputTopLeft": CIVector(cgPoint: topLeft),
@@ -616,6 +710,7 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
         ])?.outputImage else {
             return nil
         }
+
         guard let cg = ciContext.createCGImage(corrected, from: corrected.extent) else { return nil }
         return UIImage(cgImage: cg, scale: 1.0, orientation: .up)
     }
@@ -635,19 +730,14 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
             brightnessHistory.removeFirst(brightnessHistory.count - maxBrightnessHistory)
         }
         
-        // TEMP: disable light validation (always treat light as good)
-        // let goodLight = brightness > -0.25
+        // TEMP: disable strict light validation for now
         let goodLight = true
         let stable = !(isAdjustingFocus || isAdjustingExposure)
-        // var conditionOk = goodLight && stable
-        var conditionOk = /*goodLight &&*/ stable
-        if step.title.localizedCaseInsensitiveContains("back") {
-            if documentType != .internationalID {
-                conditionOk = conditionOk && barcodeDetected
-            }
-        } else if step.title.localizedCaseInsensitiveContains("face") {
-            // Run Vision-based face analysis periodically
-            frameCounter &+= 1
+        var conditionOk = stable
+        
+        let stepLower = step.title.lowercased()
+        frameCounter &+= 1
+        if stepLower.contains("face") {
             if frameCounter % 2 == 0 {
                 analyzeFaceForLiveness(sampleBuffer)
             }
@@ -655,6 +745,30 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
             let qualityOK = faceQuality == 0 ? true : (faceQuality >= 0.45)
             let spoofRiskLow = qualityOK && brightnessStd >= 0.06
             conditionOk = conditionOk && livenessPassed && spoofRiskLow
+        } else {
+            // Front / Back document: require a good rectangle presence
+            if frameCounter % 2 == 0 {
+                analyzeDocumentRectangle(sampleBuffer)
+            }
+            // Also check for MRZ on passport/international ID back
+            if frameCounter % 3 == 0 && stepLower.contains("back") {
+                if documentType == .passport || documentType == .internationalID {
+                    analyzeMRZ(sampleBuffer)
+                }
+            }
+            let rectOK = rectDetected && rectAspectOK && rectFillOK && rectAngleOK && rectStable
+            if stepLower.contains("back") {
+                // Driver's license and passport card: require PDF417 barcode
+                if documentType == .driversLicenseOrIDCard || documentType == .passportCard {
+                    conditionOk = conditionOk && rectOK && barcodeDetected
+                } else if documentType == .passport || documentType == .internationalID {
+                    // Passport and international ID: require MRZ detection
+                    conditionOk = conditionOk && rectOK && mrzDetected
+                }
+            } else {
+                // Front sides: just need good rectangle
+                conditionOk = conditionOk && rectOK
+            }
         }
         
         DispatchQueue.main.async { [weak self] in
@@ -664,8 +778,8 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
                 self.livenessLabel.alpha = 1.0
             }
             
-            // progress animation around cutout
-            let delta: CGFloat = conditionOk ? 0.06 : -0.12
+            // progress animation around cutout - faster fill rate for quicker capture
+            let delta: CGFloat = conditionOk ? 0.12 : -0.08    // Was 0.06 / -0.12
             self.goodProgress = max(0, min(1, self.goodProgress + delta))
             self.progressLayer.strokeEnd = self.goodProgress
             
@@ -748,7 +862,7 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
             lastRightEAR = lastRightEAR * 0.6 + rightEAR * 0.4
             
             // Advance liveness stages
-            advanceLivenessIfNeeded(yaw: lastYaw, blinked: blinkRegistered)
+            advanceLivenessIfNeeded(yaw: lastYaw)
         } else {
             faceDetected = false
             missingFaceCount += 1
@@ -758,7 +872,7 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
         }
     }
     
-    private func advanceLivenessIfNeeded(yaw: Float, blinked: Bool) {
+    private func advanceLivenessIfNeeded(yaw: Float) {
         // Tolerances
         let centerTol: Float = 0.15
         let leftThresh: Float = -0.35
@@ -779,11 +893,12 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
             if abs(y) <= centerTol && faceCentered {
                 stageHoldCount &+= 1
                 if stageHoldCount >= holdFramesCenter {
-                    livenessStage = .lookRight
+                    // Move to left first per requirement
+                    livenessStage = .lookLeft
                     stageFrameCount = 0
                     stageHoldCount = 0
                     wrongFrameCount = 0
-                    DispatchQueue.main.async { self.updateLivenessLabel("turn head right >>") }
+                    DispatchQueue.main.async { self.updateLivenessLabel("<< turn head left") }
                 } else {
                     DispatchQueue.main.async { self.updateLivenessLabel("center your face") }
                 }
@@ -795,11 +910,11 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
             if y <= leftThresh {
                 stageHoldCount &+= 1
                 if stageHoldCount >= holdFramesTurn {
-                    livenessStage = .center2
+                    livenessStage = .lookRight
                     stageFrameCount = 0
                     stageHoldCount = 0
                     wrongFrameCount = 0
-                    DispatchQueue.main.async { self.updateLivenessLabel("center your face") }
+                    DispatchQueue.main.async { self.updateLivenessLabel("turn head right >>") }
                 } else {
                     DispatchQueue.main.async { self.updateLivenessLabel("<< turn head left") }
                 }
@@ -812,11 +927,11 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
             if y >= rightThresh {
                 stageHoldCount &+= 1
                 if stageHoldCount >= holdFramesTurn {
-                    livenessStage = .lookLeft
+                    livenessStage = .center2
                     stageFrameCount = 0
                     stageHoldCount = 0
                     wrongFrameCount = 0
-                    DispatchQueue.main.async { self.updateLivenessLabel("<< turn head left") }
+                    DispatchQueue.main.async { self.updateLivenessLabel("center your face") }
                 } else {
                     DispatchQueue.main.async { self.updateLivenessLabel("turn head right >>") }
                 }
@@ -829,38 +944,26 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
             if abs(y) <= centerTol && faceCentered {
                 stageHoldCount &+= 1
                 if stageHoldCount >= holdFramesCenter {
-                    livenessStage = .blink
-                    stageFrameCount = 0
-                    stageHoldCount = 0
-                    wrongFrameCount = 0
-                    DispatchQueue.main.async { self.updateLivenessLabel("blink once") }
+                    livenessStage = .done
+                    livenessPassed = true
+                    DispatchQueue.main.async {
+                        self.updateLivenessLabel("all good")
+                        // Immediate capture once liveness finishes
+                        if !self.isCapturing {
+                            self.isCapturing = true
+                            let settings = AVCapturePhotoSettings()
+                            if self.videoDevice?.isFlashAvailable == true {
+                                settings.flashMode = self.isTorchOn ? .off : .auto
+                            }
+                            self.photoOutput.capturePhoto(with: settings, delegate: self)
+                        }
+                    }
                 } else {
                     DispatchQueue.main.async { self.updateLivenessLabel("center your face") }
                 }
             } else {
                 stageHoldCount = 0
                 DispatchQueue.main.async { self.updateLivenessLabel("center your face") }
-            }
-        case .blink:
-            // Prefer centered when blinking
-            if blinked && abs(y) <= centerTol && faceCentered {
-                livenessStage = .done
-                livenessPassed = true
-                DispatchQueue.main.async {
-                    self.updateLivenessLabel("all good")
-                    // Immediate capture once liveness finishes for face
-                    if !self.isCapturing {
-                        self.isCapturing = true
-                        let settings = AVCapturePhotoSettings()
-                        if self.videoDevice?.isFlashAvailable == true {
-                            settings.flashMode = self.isTorchOn ? .off : .auto
-                        }
-                        self.photoOutput.capturePhoto(with: settings, delegate: self)
-                    }
-                }
-            } else {
-                if y >= rightThresh || y <= leftThresh { wrongFrameCount &+= 1 }
-                DispatchQueue.main.async { self.updateLivenessLabel("blink once") }
             }
         case .done:
             DispatchQueue.main.async { self.updateLivenessLabel("all good") }
@@ -909,6 +1012,297 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
             }
         }
         return .right
+    }
+    
+    // MARK: - Rectangle overlay & stability (ported from ScanCardsScreen)
+    private func animatePreviewLayer(opacity: Float, duration: TimeInterval) {
+        CATransaction.begin()
+        CATransaction.setAnimationDuration(duration)
+        previewLayer?.opacity = opacity
+        CATransaction.commit()
+    }
+    
+    private func isRectangleSimilar(_ rect1: VNRectangleObservation, to rect2: VNRectangleObservation?) -> Bool {
+        guard let rect2 = rect2, let layer = previewLayer else { return false }
+        let layerBounds = layer.bounds
+        let transform = CGAffineTransform(scaleX: 1, y: -1).translatedBy(x: 0, y: -layerBounds.height)
+        let scale = CGAffineTransform.identity.scaledBy(x: layerBounds.width, y: layerBounds.height)
+        
+        let topLeft = rect1.topLeft.applying(scale).applying(transform)
+        let topRight = rect1.topRight.applying(scale).applying(transform)
+        let bottomLeft = rect1.bottomLeft.applying(scale).applying(transform)
+        let bottomRight = rect1.bottomRight.applying(scale).applying(transform)
+        let RtopLeft = rect2.topLeft.applying(scale).applying(transform)
+        let RtopRight = rect2.topRight.applying(scale).applying(transform)
+        let RbottomLeft = rect2.bottomLeft.applying(scale).applying(transform)
+        let RbottomRight = rect2.bottomRight.applying(scale).applying(transform)
+        let threshold: CGFloat = 10.0
+        let topLeftClose = (abs(topLeft.x - RtopLeft.x) < threshold) && (abs(topLeft.y - RtopLeft.y) < threshold)
+        let topRightClose = (abs(topRight.x - RtopRight.x) < threshold) && (abs(topRight.y - RtopRight.y) < threshold)
+        let bottomLeftClose = (abs(bottomLeft.x - RbottomLeft.x) < threshold) && (abs(bottomLeft.y - RbottomLeft.y) < threshold)
+        let bottomRightClose = (abs(bottomRight.x - RbottomRight.x) < threshold) && (abs(bottomRight.y - RbottomRight.y) < threshold)
+        return topLeftClose && topRightClose && bottomLeftClose && bottomRightClose
+    }
+    
+    private func isRectangleStable(_ rect: VNRectangleObservation, with referenceRect: VNRectangleObservation) -> Bool {
+        guard let layer = previewLayer else { return false }
+        let layerBounds = layer.bounds
+        let transform = CGAffineTransform(scaleX: 1, y: -1).translatedBy(x: 0, y: -layerBounds.height)
+        let scale = CGAffineTransform.identity.scaledBy(x: layerBounds.width, y: layerBounds.height)
+
+        let topLeft = rect.topLeft.applying(scale).applying(transform)
+        let topRight = rect.topRight.applying(scale).applying(transform)
+        let bottomLeft = rect.bottomLeft.applying(scale).applying(transform)
+        let bottomRight = rect.bottomRight.applying(scale).applying(transform)
+        let RtopLeft = referenceRect.topLeft.applying(scale).applying(transform)
+        let RtopRight = referenceRect.topRight.applying(scale).applying(transform)
+        let RbottomLeft = referenceRect.bottomLeft.applying(scale).applying(transform)
+        let RbottomRight = referenceRect.bottomRight.applying(scale).applying(transform)
+
+        // More lenient threshold for stability (was 2.0)
+        let threshold: CGFloat = 8.0
+        let topLeftClose = (abs(topLeft.x - RtopLeft.x) < threshold) && (abs(topLeft.y - RtopLeft.y) < threshold)
+        let topRightClose = (abs(topRight.x - RtopRight.x) < threshold) && (abs(topRight.y - RtopRight.y) < threshold)
+        let bottomLeftClose = (abs(bottomLeft.x - RbottomLeft.x) < threshold) && (abs(bottomLeft.y - RbottomLeft.y) < threshold)
+        let bottomRightClose = (abs(bottomRight.x - RbottomRight.x) < threshold) && (abs(bottomRight.y - RbottomRight.y) < threshold)
+
+        return topLeftClose && topRightClose && bottomLeftClose && bottomRightClose
+    }
+    
+    private func drawBoundingBox(rect: VNRectangleObservation) {
+        guard let layer = previewLayer else { return }
+        let offsetY: CGFloat = 0
+        let transform = CGAffineTransform(translationX: 0, y: offsetY).scaledBy(x: 1, y: -1).translatedBy(x: 0, y: -layer.bounds.height)
+        let scale = CGAffineTransform.identity.scaledBy(x: layer.bounds.width, y: layer.bounds.height)
+        
+        let topLeft = rect.topLeft.applying(scale).applying(transform)
+        let topRight = rect.topRight.applying(scale).applying(transform)
+        let bottomLeft = rect.bottomLeft.applying(scale).applying(transform)
+        let bottomRight = rect.bottomRight.applying(scale).applying(transform)
+        
+        createPolygon(topLeft: topLeft, topRight: topRight, bottomLeft: bottomLeft, bottomRight: bottomRight)
+    }
+    
+    private func createPolygon(topLeft: CGPoint, topRight: CGPoint, bottomLeft: CGPoint, bottomRight: CGPoint) {
+        let path = UIBezierPath()
+        path.move(to: topLeft)
+        path.addLine(to: topRight)
+        path.addLine(to: bottomRight)
+        path.addLine(to: bottomLeft)
+        path.close()
+        
+        rectPolygonPath = path
+        
+        // Reuse a single layer: update path each time, insert once
+        if rectMaskLayer.superlayer == nil {
+            rectMaskLayer.fillColor = UIColor.clear.cgColor
+            rectMaskLayer.strokeColor = UIColor.systemBlue.cgColor
+            rectMaskLayer.lineWidth = 2.0
+            if let layer = previewLayer {
+                layer.insertSublayer(rectMaskLayer, at: 1)
+            }
+        }
+        
+        // Animate path update slightly
+        CATransaction.begin()
+        CATransaction.setAnimationDuration(0.10)
+        rectMaskLayer.path = path.cgPath
+        CATransaction.commit()
+    }
+    
+    private func removeRectMask() {
+        let fadeOutAnimation = CABasicAnimation(keyPath: "opacity")
+        fadeOutAnimation.fromValue = 1
+        fadeOutAnimation.toValue = 0
+        fadeOutAnimation.duration = 0.25
+        fadeOutAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        fadeOutAnimation.isRemovedOnCompletion = false
+        fadeOutAnimation.fillMode = .forwards
+        rectMaskLayer.add(fadeOutAnimation, forKey: "opacity")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.26) { [weak self] in
+            self?.rectMaskLayer.removeFromSuperlayer()
+        }
+    }
+    
+    // MARK: - MRZ Detection for passport/international ID
+    private func analyzeMRZ(_ sampleBuffer: CMSampleBuffer) {
+        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+            mrzDetected = false
+            return
+        }
+
+        let request = VNRecognizeTextRequest { [weak self] request, error in
+            guard let self = self, error == nil,
+                  let observations = request.results as? [VNRecognizedTextObservation] else {
+                self?.mrzDetected = false
+                return
+            }
+
+            // Look for MRZ patterns in recognized text
+            // MRZ lines typically start with specific patterns and contain < characters
+            var foundMRZ = false
+            var mrzLines: [String] = []
+
+            for observation in observations {
+                guard let candidate = observation.topCandidates(1).first else { continue }
+                let text = candidate.string.uppercased()
+
+                // MRZ characteristics (relaxed for faster detection):
+                // - Contains < characters (filler)
+                // - Has mostly uppercase letters and digits
+                // - Reasonable length
+                let chevronCount = text.filter { $0 == "<" }.count
+                let alphanumCount = text.filter { $0.isLetter || $0.isNumber }.count
+                let ratio = Double(alphanumCount + chevronCount) / max(1, Double(text.count))
+
+                // Relaxed MRZ detection - fewer chevrons required, shorter text OK
+                if chevronCount >= 1 && ratio > 0.75 && text.count >= 15 {
+                    foundMRZ = true
+                    mrzLines.append(text)
+                }
+
+                // Also check for specific MRZ start patterns
+                if text.hasPrefix("P<") || text.hasPrefix("P ") || text.hasPrefix("I<") ||
+                   text.hasPrefix("ID") || text.hasPrefix("A<") || text.hasPrefix("C<") ||
+                   text.hasPrefix("V<") || text.contains("<<<") {
+                    foundMRZ = true
+                    if !mrzLines.contains(text) {
+                        mrzLines.append(text)
+                    }
+                }
+            }
+
+            self.mrzDetected = foundMRZ
+            self.mrzText = mrzLines.joined(separator: "\n")
+        }
+
+        // Configure for MRZ recognition - use fast mode for quicker detection
+        request.recognitionLevel = .fast              // Was .accurate - much faster
+        request.usesLanguageCorrection = false
+        request.recognitionLanguages = ["en-US"]
+        // Focus on bottom portion of document where MRZ typically appears
+        request.regionOfInterest = CGRect(x: 0.0, y: 0.0, width: 1.0, height: 0.6)
+
+        let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer,
+                                            orientation: cgImageOrientationForCurrentVideo(),
+                                            options: [:])
+        do {
+            try handler.perform([request])
+        } catch {
+            mrzDetected = false
+        }
+    }
+
+    // MARK: - Vision rectangle detection (Front/Back live)
+    private func analyzeDocumentRectangle(_ sampleBuffer: CMSampleBuffer) {
+        guard !step.title.localizedCaseInsensitiveContains("face"),
+              let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+            return
+        }
+        
+        let req = VNDetectRectanglesRequest()
+        req.maximumObservations = 1
+        // Relaxed parameters for faster detection
+        req.minimumSize = 0.10                    // Allow smaller documents (was 0.15)
+        req.minimumConfidence = 0.60              // Lower confidence threshold (was 0.80)
+        req.minimumAspectRatio = 0.20             // Slightly more tolerant (was 0.10)
+        req.quadratureTolerance = 30.0            // More angle tolerance (was 20.0)
+        // Wider region of interest for easier positioning
+        let roiW: CGFloat = 0.85                  // Was 0.72
+        let roiH: CGFloat = 0.85                  // Was 0.72
+        let roiX: CGFloat = (1.0 - roiW) * 0.5
+        let roiY: CGFloat = (1.0 - roiH) * 0.5
+        req.regionOfInterest = CGRect(x: roiX, y: roiY, width: roiW, height: roiH)
+        
+        let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer,
+                                            orientation: cgImageOrientationForCurrentVideo(),
+                                            options: [:])
+        do {
+            try handler.perform([req])
+        } catch {
+            rectDetected = false
+            rectAspectOK = false
+            rectFillOK = false
+            rectAngleOK = false
+            lastRectObservation = nil
+            rectStable = false
+            lastFiveRectangles.removeAll(keepingCapacity: true)
+            removeRectMask()
+            return
+        }
+        
+        guard let obs = (req.results as? [VNRectangleObservation])?.first else {
+            rectDetected = false
+            rectAspectOK = false
+            rectFillOK = false
+            rectAngleOK = false
+            lastRectObservation = nil
+            rectStable = false
+            lastFiveRectangles.removeAll(keepingCapacity: true)
+            removeRectMask()
+            return
+        }
+        
+        lastRectObservation = obs
+        // Draw polygon overlay for user feedback
+        drawBoundingBox(rect: obs)
+        
+        // Track stability across recent frames (reduced from 5 to 3 for faster capture)
+        lastFiveRectangles.append(obs)
+        if lastFiveRectangles.count > 3 {
+            lastFiveRectangles.removeFirst()
+        }
+        var stableNow = false
+        if lastFiveRectangles.count >= 3 {
+            stableNow = lastFiveRectangles.allSatisfy { isRectangleStable($0, with: lastFiveRectangles[0]) }
+            if stableNow {
+                if lastCapturedRectangle == nil || !isRectangleSimilar(lastCapturedRectangle!, to: obs) {
+                    lastCapturedRectangle = obs
+                }
+            }
+        }
+        rectStable = stableNow
+
+        // Evaluate fitness
+        evaluateRectangleFitness(obs)
+        // Require stability only when we have enough frames
+        if lastFiveRectangles.count >= 3 {
+            rectDetected = rectDetected && stableNow
+        }
+    }
+    
+    private func evaluateRectangleFitness(_ rect: VNRectangleObservation) {
+        // Bounding box geometry in normalized coordinates
+        let r = rect.boundingBox
+        let w = max(r.width, 1e-6)
+        let h = max(r.height, 1e-6)
+        let ratio = max(w, h) / min(w, h) // orientation-agnostic
+        
+        // ID card typical aspect ~ 1.586 (85.6x54mm). Very generous tolerance for all document types.
+        rectAspectOK = (ratio >= 1.10 && ratio <= 2.50)      // Was 1.25-2.10
+
+        // Size / fill: allow wider range of document sizes
+        let area = w * h
+        rectFillOK = (area >= 0.05 && area <= 0.90)          // Was 0.08-0.80
+
+        // Centering: more lenient positioning
+        let centerDx = abs((r.origin.x + r.size.width * 0.5) - 0.5)
+        let centerDy = abs((r.origin.y + r.size.height * 0.5) - 0.5)
+        let centerOK = (centerDx <= 0.30 && centerDy <= 0.30) // Was 0.20, 0.22
+        
+        // Angle: use top edge vector
+        func angleDeg(_ a: CGPoint, _ b: CGPoint) -> CGFloat {
+            let vx = b.x - a.x
+            let vy = b.y - a.y
+            let ang = atan2(vy, vx) * 180.0 / .pi
+            return abs(ang)
+        }
+        let topAngle = angleDeg(rect.topLeft, rect.topRight)
+        let bottomAngle = angleDeg(rect.bottomLeft, rect.bottomRight)
+        // Accept if either edge is close-ish to horizontal (more tolerant)
+        rectAngleOK = (min(topAngle, bottomAngle) <= 35.0)    // Was 22.0
+        
+        rectDetected = centerOK && rectAspectOK && rectFillOK && rectAngleOK
     }
     
     private func eyeOpenRatio(points: [CGPoint]) -> CGFloat {
@@ -1049,26 +1443,26 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
     private func hintImage() -> UIImage? {
         // Map by document type and step semantic (front/back)
         let stepLower = step.title.lowercased()
-        let isFront = stepLower.contains("front") || stepLower.contains("document front")
+        let isFront = stepLower.contains("front")
         let isBack = stepLower.contains("back")
-        
-        // Explicit mappings for assets you mentioned
+
+        // Explicit mappings for assets - with fallbacks
         switch documentType {
             case .driversLicenseOrIDCard:
-                if isFront { return UIImage(named: "DRIVER LICENSE - FRONT") }
-                if isBack { return UIImage(named: "DRIVER LICENSE - BACK") }
+                if isFront { return UIImage(named: "DRIVER LICENSE - FRONT") ?? UIImage(named: "drivers-license") }
+                if isBack { return UIImage(named: "DRIVER LICENSE - BACK") ?? UIImage(named: "drivers-license") }
             case .passport:
-                // Try a reasonable convention if provided in assets
+                // Passport uses same image asset for front; back may use front flipped or a generic
                 if isFront { return UIImage(named: "PASSPORT - FRONT") }
-                if isBack { return UIImage(named: "PASSPORT - BACK") }
+                if isBack { return UIImage(named: "PASSPORT - BACK") ?? UIImage(named: "PASSPORT - FRONT") }
             case .passportCard:
                 if isFront { return UIImage(named: "PASSPORT CARD - FRONT") ?? UIImage(named: "PASSPORT - FRONT") }
-                if isBack { return UIImage(named: "PASSPORT CARD - BACK") }
+                if isBack { return UIImage(named: "PASSPORT CARD - BACK") ?? UIImage(named: "PASSPORT - FRONT") }
             case .internationalID:
-                if isFront { return UIImage(named: "ID CARD - FRONT") }
-                if isBack { return UIImage(named: "INTERNATIONAL ID - BACK") }
+                if isFront { return UIImage(named: "ID CARD - FRONT") ?? UIImage(named: "DRIVER LICENSE - FRONT") }
+                if isBack { return UIImage(named: "INTERNATIONAL ID - BACK") ?? UIImage(named: "DRIVER LICENSE - BACK") }
         }
-        return nil
+        return UIImage(named: "drivers-license")
     }
     
     private func playFrontHintIfNeeded() {

@@ -206,9 +206,18 @@ final class IDScanStepsVC: UIViewController {
     }
     
     @objc private func onSubmit() {
-        if let vc = STORYBOARD.verifyAccount.instantiateViewController(withIdentifier: "VerifiedScreen") as? VerifiedScreen {
-            navigationController?.pushViewController(vc, animated: true)
-        }
+        // Build payload from captured images and fire multipart upload.
+        let typeCode = apiDocumentTypeCode()
+        let images = resolvedCapturedImages()
+        // TODO: wire real age/email from your user model
+        let age = "23"
+        let email = "kartik.iroid@gmail.com"
+        uploadVerification(documentType: "\(typeCode)",
+                           documentFront: images.front?.jpegData(compressionQuality: 0.5) ?? Data(),
+                           documentBack: images.back?.jpegData(compressionQuality: 0.5) ?? Data(),
+                           livePhoto: images.live?.jpegData(compressionQuality: 0.5) ?? Data(),
+                           age: age,
+                           email: email)
     }
     
     @objc private func startFlow() {
@@ -390,6 +399,169 @@ final class IDScanStepsVC: UIViewController {
         return l
     }
     
+    // MARK: - API mapping helpers
+    /// Map our `IDDocumentType` to backend `documentType` code.
+    /// 1 = Driving License, 2 = Passport, 3 = Passport Card,
+    /// 4 = Green Card (not used here), 5 = International ID Card.
+    private func apiDocumentTypeCode() -> Int {
+        switch documentType {
+        case .driversLicenseOrIDCard: return 1
+        case .passport: return 2
+        case .passportCard: return 3
+        case .internationalID: return 5   // no Green Card type in app yet
+        }
+    }
+    
+    /// Resolve which captured images correspond to document front, back and face.
+    private func resolvedCapturedImages() -> (front: UIImage?, back: UIImage?, live: UIImage?) {
+        var front: UIImage?
+        var back: UIImage?
+        var live: UIImage?
+        
+        for (idx, step) in steps.enumerated() {
+            guard idx < capturedImages.count, let image = capturedImages[idx] else { continue }
+            let lower = step.title.lowercased()
+            if lower.contains("front") {
+                front = image
+            } else if lower.contains("back") {
+                back = image
+            } else if lower.contains("face") {
+                live = image
+            }
+        }
+        return (front, back, live)
+    }
+    
+   // Multipart upload: age, documentType, documentFront, documentBack, livePhoto, email.
+    private func uploadVerification(documentType: String,
+                                    documentFront: Data?,
+                                    documentBack: Data?,
+                                    livePhoto: Data?,
+                                    age: String,
+                                    email: String) {
+        
+        let request = UploadDocumentRequest(age: age, documentType: documentType, email: email)
+        
+        if Utility.isInternetAvailable() {
+            Utility.showIndicator()
+            AuthServices.shared.uploadDocument(parameters: request.toJSON(), documentFrontImageData: documentFront, documentBackImageData: documentBack, faceImageData: livePhoto, success: {  [weak self] (statusCode, response) in
+                guard let self = self else { return }
+                Utility.hideIndicator()
+
+                if let res = response.documentVerificationData {
+                    print(res.toJSON())
+                    // Navigate to VerifiedScreen with data
+                    if let vc = STORYBOARD.verifyAccount.instantiateViewController(withIdentifier: "VerifiedScreen") as? VerifiedScreen {
+                        vc.verificationData = res
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }
+                }
+
+            }, failure: { [weak self] (error) in
+                guard let selfScreen = self else { return }
+                Utility.hideIndicator()
+                Utility.showAlert(vc: selfScreen, message: error)
+                
+            })
+            
+        } else {
+            Utility.hideIndicator()
+            Utility.showNoInternetConnectionAlertDialog(vc: self)
+        }
+    }
+    
+//    func uploadVerification(documentType: String,
+//                            documentFront: Data?,
+//                            documentBack: Data?,
+//                            livePhoto: Data?,
+//                            age: String,
+//                            email: String,
+//                            completion: @escaping (Result<Data, Error>) -> Void) {
+//        
+//        // 1) URL
+//        guard let url = URL(string: "https://dev.iroidsolutions.com:3035/api/upload") else {
+//            completion(.failure(UploadError.invalidURL))
+//            return
+//        }
+//        
+//        // 2) Request and headers
+//        var request = URLRequest(url: url)
+//        request.httpMethod = "POST"
+//        request.setValue("27a34e6c7fecca9c9d03118a85d18cd81f0b95ad02847725d4c7ae00abeb998f", forHTTPHeaderField: "x-secret-key")
+//        
+//        // Boundary
+//        let boundary = "Boundary-\(UUID().uuidString)"
+//        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+//        
+//        // Helper to append a field
+//        func appendFormField(_ name: String, value: String, to data: inout Data) {
+//            data.append("--\(boundary)\r\n")
+//            data.append("Content-Disposition: form-data; name=\"\(name)\"\r\n\r\n")
+//            data.append("\(value)\r\n")
+//        }
+//        
+//        // Helper to append file
+//        func appendFileField(_ name: String, filename: String, mimeType: String, fileData: Data, to data: inout Data) {
+//            data.append("--\(boundary)\r\n")
+//            data.append("Content-Disposition: form-data; name=\"\(name)\"; filename=\"\(filename)\"\r\n")
+//            data.append("Content-Type: \(mimeType)\r\n\r\n")
+//            data.append(fileData)
+//            data.append("\r\n")
+//        }
+//        
+//        // 3) Build body
+//        var body = Data()
+//        
+//        // Text fields
+//        appendFormField("age", value: age, to: &body)
+//        appendFormField("documentType", value: documentType, to: &body)
+//        appendFormField("email", value: email, to: &body)
+//        
+//        // Files (only add if non-nil)
+//        if let front = documentFront {
+//            appendFileField("documentFront", filename: "documentFront.jpg", mimeType: "image/jpeg", fileData: front, to: &body)
+//        }
+//        if let back = documentBack {
+//            appendFileField("documentBack", filename: "documentBack.jpg", mimeType: "image/jpeg", fileData: back, to: &body)
+//        }
+//        if let live = livePhoto {
+//            appendFileField("livePhoto", filename: "livePhoto.png", mimeType: "image/png", fileData: live, to: &body)
+//        }
+//        
+//        // final boundary
+//        body.append("--\(boundary)--\r\n")
+//        
+//        request.httpBody = body
+//        // optionally set Content-Length (URLSession sets it automatically in most cases)
+//        request.setValue(String(body.count), forHTTPHeaderField: "Content-Length")
+//        
+//        // 4) Send request
+//        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+//            // Callback on main queue
+//            DispatchQueue.main.async {
+//                if let error = error {
+//                    completion(.failure(error))
+//                    return
+//                }
+//                
+//                if let http = response as? HTTPURLResponse {
+//                    if !(200...299).contains(http.statusCode) {
+//                        completion(.failure(UploadError.serverError(statusCode: http.statusCode, data: data)))
+//                        return
+//                    }
+//                }
+//                
+//                guard let data = data else {
+//                    completion(.failure(UploadError.noData))
+//                    return
+//                }
+//                
+//                completion(.success(data))
+//            }
+//        }
+//        task.resume()
+//    }
+    
     // MARK: - Reset
     @objc private func onResetAll() {
         stepStatuses = steps.map { _ in .pending }
@@ -551,4 +723,19 @@ private final class StepCardView: UIControl {
                 isUserInteractionEnabled = true
         }
     }
+}
+
+
+private extension Data {
+    mutating func append(_ string: String) {
+        if let d = string.data(using: .utf8) {
+            append(d)
+        }
+    }
+}
+
+enum UploadError: Error {
+    case invalidURL
+    case serverError(statusCode: Int, data: Data?)
+    case noData
 }

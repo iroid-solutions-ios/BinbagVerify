@@ -21,11 +21,15 @@ class APIManager {
     }
     
     func getHeader() -> HTTPHeaders {
-        
+
         var headerDic: HTTPHeaders = [:]
-        
+
         if Utility.getUserData() == nil {
-            headerDic = [ "Accept" : "application/json" ]
+            // NOTE: Do NOT set Content-Type for multipart requests - Alamofire sets it automatically with boundary
+            headerDic = [ "accept" : "*/*",
+                          "x-secret-key" : "27a34e6c7fecca9c9d03118a85d18cd81f0b95ad02847725d4c7ae00abeb998f"
+            ]
+
         }
         else {
             if let accessToken = Utility.getAccessToken() {
@@ -582,9 +586,91 @@ class APIManager {
         }
     }
     
-    
-    
-    
+    func requestWithMultipleDocumentImage(urlString : String, documentFrontImage : String,documentFrontImageData : Data?, documentBackImage : String, documentBackImageData : Data?, faceImage : String,faceImageData: Data?, parameters : [String:Any],success : @escaping(Int,Response) -> (),failure : @escaping(String) -> ()){
+        
+        if isConnectedToNetwork() == false {
+            failure("No internet available.")
+            return
+        }
+        
+        if isAppInTestMode {
+            print("url ----> ", urlString)
+            print("parameters ----> ", parameters)
+            print("headers ----> ", getHeader())
+        }
+        
+        Alamofire.upload(multipartFormData:{(multipartFormData) in
+            if let documentFrontImageData = documentFrontImageData{
+                multipartFormData.append(documentFrontImageData, withName: documentFrontImage,fileName: getFileName()+".jpg", mimeType: "image/jpg")
+            }
+            
+            if let documentBackImageData = documentBackImageData{
+                multipartFormData.append(documentBackImageData, withName: documentBackImage,fileName: getFileName()+".jpg", mimeType: "image/jpg")
+            }
+            
+            if let faceImageData = faceImageData{
+                multipartFormData.append(faceImageData, withName: faceImage,fileName: getFileName()+".jpg", mimeType: "image/jpg")
+            }
+            for (key, value) in parameters {
+                multipartFormData.append((value as AnyObject).data(using: String.Encoding.utf8.rawValue)!, withName: key)
+            }
+            
+            print("Multipart form data parameters", parameters)
+
+        }, to:urlString, method: .post, headers:getHeader()){ (result) in
+            switch result {
+            case .success(let upload, _, _):
+
+                upload.uploadProgress(closure: { (progress) in
+                    print("Upload Progress: \(progress.fractionCompleted)")
+                })
+
+                upload.responseObject { (response: DataResponse<Response>) in
+                    switch response.result{
+                    case .success(let value):
+                        guard let statusCode = response.response?.statusCode else {
+                            failure(value.message ?? "")
+                            return
+                        }
+
+                        if isAppInTestMode {
+                            print("response ----> ", response.result.value?.toJSON() as Any)
+                        }
+
+                        if (200..<300).contains(statusCode) {
+                            success(statusCode,value)
+                        }
+                        else if statusCode == 401 {
+                            Utility.clearNotifications()
+                            Utility.hideIndicator()
+                            Utility.removeUserData()
+                            Utility.setRootLoginRegisterViewController()
+                            userDefaults.setGuestUserLoggedIn(value: false)
+                            userDefaults.removeObject(forKey: UserDefaultsKeys.isGuestUser.rawValue)
+                            userDefaults.clearUserDefaultsValues()
+                        }
+                        else if statusCode == 402 {
+                            failure(value.message ?? "")
+                        }
+                        else if statusCode == 403 {
+                            success(statusCode,value)
+                        }
+                        else {
+                            failure(value.message ?? "")
+                        }
+                        break
+                    case .failure(let error):
+                        failure(error.localizedDescription)
+                        break
+                    }
+
+                }
+            case .failure(let error):
+                failure(error.localizedDescription)
+            }
+        }
+    }
+
 }
 
 struct ImageVideoMedia {

@@ -246,7 +246,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="drI-aZ-Wrb">
-                                <rect key="frame" x="326" y="67" width="51" height="38"/>
+                                <rect key="frame" x="326" y="59" width="51" height="38"/>
                                 <inset key="contentEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" title="Skip">
@@ -261,7 +261,7 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="Edn-no-LoZ" secondAttribute="bottom" id="1iK-mh-SLh"/>
-                            <constraint firstItem="drI-aZ-Wrb" firstAttribute="top" secondItem="0CE-qL-MFC" secondAttribute="top" constant="8" id="9Sv-oa-R15"/>
+                            <constraint firstItem="drI-aZ-Wrb" firstAttribute="top" secondItem="0CE-qL-MFC" secondAttribute="top" id="9Sv-oa-R15"/>
                             <constraint firstItem="0CE-qL-MFC" firstAttribute="trailing" secondItem="drI-aZ-Wrb" secondAttribute="trailing" constant="16" id="CjD-5d-TWc"/>
                             <constraint firstItem="Edn-no-LoZ" firstAttribute="leading" secondItem="0CE-qL-MFC" secondAttribute="leading" id="Ldi-bb-tbq"/>
                             <constraint firstItem="Edn-no-LoZ" firstAttribute="top" secondItem="Eh5-ML-q5B" secondAttribute="top" id="Ltg-QV-21o"/>
