@@ -22,5 +22,18 @@ class AuthServices {
 
         })
     }
-    
+
+    // Reverify API - for face verification only
+    func reverify(email: String, age: String, livePhotoData: Data?, success: @escaping (Int, Response) -> (), failure: @escaping (String) -> ()) {
+        let parameters: [String: Any] = [
+            "email": email,
+            "age": age
+        ]
+        APIManager.shared.requestWithMultipleDocumentImage(urlString: reverifyURL, documentFrontImage: "", documentFrontImageData: nil, documentBackImage: "", documentBackImageData: nil, faceImage: "livePhoto", faceImageData: livePhotoData, parameters: parameters, success: { (statusCode, response) in
+            success(statusCode, response)
+        }, failure: { (error) in
+            failure(error)
+        })
+    }
+
 }

@@ -22,7 +22,7 @@ class ContractScreen: UIViewController {
     @IBOutlet weak var birthDateTextField: UITextField!
     
     @IBOutlet weak var continueButton: UIButton!
-    
+
     //MARK: - Variables
     var sdk: DIVESDK?
     var datePicker = UIDatePicker()
@@ -165,16 +165,16 @@ class ContractScreen: UIViewController {
     
     //MARK: - IBActions
     @IBAction func onApproveAndContinue(_ sender: Any) {
-//        if let message = checkValidation() {
-//            Utility.showAlert(vc: self, message: message)
-//        } else {
+        if let message = checkValidation() {
+            Utility.showAlert(vc: self, message: message)
+        } else {
             let vc = IDScanDocumentTypeVC()
             self.navigationController?.pushViewController(vc, animated: true)
-        
+
 //       self.sdk?.start(from: self)
-//       }
+       }
     }
-    
+
 }
 
 extension ContractScreen {

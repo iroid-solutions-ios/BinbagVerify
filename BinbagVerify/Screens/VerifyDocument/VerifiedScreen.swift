@@ -189,10 +189,10 @@ class VerifiedScreen: UIViewController {
     }
 
     @objc private func onDoneButtonTapped() {
-        navigationController?.popToRootViewController(animated: true)
+        self.navigationController?.popToViewController(ofClass: SignUpScreen.self)
     }
 
     @IBAction func onDone(_ sender: UIButton) {
-        navigationController?.popToRootViewController(animated: true)
+        self.navigationController?.popToViewController(ofClass: SignUpScreen.self)
     }
 }

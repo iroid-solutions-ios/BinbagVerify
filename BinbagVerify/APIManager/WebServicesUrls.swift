@@ -13,6 +13,7 @@ let serverUrl = "https://dev.iroidsolutions.com:3035"  // dev
 
 //Auth
 let uploadDocumentURL = serverUrl + "/api/upload"
+let reverifyURL = serverUrl + "/api/reverify"
 
 
 

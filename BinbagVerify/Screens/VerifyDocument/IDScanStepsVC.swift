@@ -209,9 +209,10 @@ final class IDScanStepsVC: UIViewController {
         // Build payload from captured images and fire multipart upload.
         let typeCode = apiDocumentTypeCode()
         let images = resolvedCapturedImages()
-        // TODO: wire real age/email from your user model
+        // TODO: wire real age from your user model
         let age = "23"
-        let email = "kartik.iroid@gmail.com"
+        // Use email captured during signup instead of a static value.
+        let email = signUpRequest?.email?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         uploadVerification(documentType: "\(typeCode)",
                            documentFront: images.front?.jpegData(compressionQuality: 0.5) ?? Data(),
                            documentBack: images.back?.jpegData(compressionQuality: 0.5) ?? Data(),

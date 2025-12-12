@@ -36,12 +36,12 @@ class ViewController: UIViewController {
     @IBAction func onSkip(_ sender: UIButton) {
         self.player?.pause()
         self.player = nil
-//        if let vc = STORYBOARD.auth.instantiateViewController(withIdentifier: "SignUpScreen") as? SignUpScreen {
-//            self.navigationController?.pushViewController(vc, animated: true)
-//        }
-        if let vc = STORYBOARD.auth.instantiateViewController(withIdentifier: "ContractScreen") as? ContractScreen {
+        if let vc = STORYBOARD.auth.instantiateViewController(withIdentifier: "SignUpScreen") as? SignUpScreen {
             self.navigationController?.pushViewController(vc, animated: true)
         }
+//        if let vc = STORYBOARD.auth.instantiateViewController(withIdentifier: "ContractScreen") as? ContractScreen {
+//            self.navigationController?.pushViewController(vc, animated: true)
+//        }
     }
     
     @IBAction func onContinue(_ sender: UIButton) {

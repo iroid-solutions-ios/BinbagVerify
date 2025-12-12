@@ -23,7 +23,8 @@ class SignUpScreen: UIViewController {
     @IBOutlet weak var termsConditionTextView: UITextView!
     
     @IBOutlet weak var continueButton: UIButton!
-    
+    @IBOutlet weak var loginButton: UIButton!
+
     override func viewDidLoad() {
         super.viewDidLoad()
         initialSetup()
@@ -127,7 +128,14 @@ class SignUpScreen: UIViewController {
             }
         }
     }
-    
+
+    @IBAction func onLogin(_ sender: UIButton) {
+        // Open LoginScreen
+        if let vc = STORYBOARD.auth.instantiateViewController(withIdentifier: "LoginScreen") as? LoginScreen {
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
 }
 
 //MARK: - Validation

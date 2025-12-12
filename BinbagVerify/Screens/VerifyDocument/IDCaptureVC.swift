@@ -15,10 +15,13 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
     let documentType: IDDocumentType
     let stepIndex: Int
     let step: IDScanStep
-    
+
     // Advance handler
     var onComplete: (() -> Void)?
     var onCaptured: ((UIImage?) -> Void)?
+
+    // Face-only mode: hides front/back step buttons at bottom
+    var isFaceOnlyMode: Bool = false
     
     // Camera
     private let captureSession = AVCaptureSession()
@@ -413,14 +416,20 @@ final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate, AVCapt
         bottomStepsStack.spacing = 8
         bottomStepsStack.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(bottomStepsStack)
-        
+
         NSLayoutConstraint.activate([
             bottomStepsStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             bottomStepsStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             bottomStepsStack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8),
             bottomStepsStack.heightAnchor.constraint(equalToConstant: 48),
         ])
-        
+
+        // In face-only mode, hide all step buttons (front/back)
+        if isFaceOnlyMode {
+            bottomStepsStack.isHidden = true
+            return
+        }
+
         let steps = documentType.steps
         for idx in 0..<steps.count {
             let title = shortTitle(for: steps[idx].title)

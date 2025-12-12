@@ -332,18 +332,38 @@
                                                     <action selector="onContinue:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="gaB-9a-Q8Y"/>
                                                 </connections>
                                             </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FcV-SU-xyz" customClass="dateSportButton" customModule="BinbagVerify" customModuleProvider="target">
+                                                <rect key="frame" x="16" y="695" width="361" height="56"/>
+                                                <color key="backgroundColor" red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="56" id="FcV-h2-abc"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="18"/>
+                                                <state key="normal" title="Login"/>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                                        <real key="value" value="8"/>
+                                                    </userDefinedRuntimeAttribute>
+                                                </userDefinedRuntimeAttributes>
+                                                <connections>
+                                                    <action selector="onLogin:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="FcV-a2-def"/>
+                                                </connections>
+                                            </button>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
-                                            <constraint firstItem="cRs-UI-oCP" firstAttribute="top" secondItem="rES-Pe-3sW" secondAttribute="bottom" constant="16" id="3Ho-D5-GFS"/>
+                                            <constraint firstItem="cRs-UI-oCP" firstAttribute="top" secondItem="rES-Pe-3sW" secondAttribute="bottom" constant="16" id="FcV-c4-ghi"/>
                                             <constraint firstItem="cRs-UI-oCP" firstAttribute="leading" secondItem="sEy-cn-haL" secondAttribute="leading" constant="16" id="ALE-Ma-55E"/>
+                                            <constraint firstAttribute="trailing" secondItem="cRs-UI-oCP" secondAttribute="trailing" constant="16" id="xL6-ua-Rg1"/>
+                                            <constraint firstItem="FcV-SU-xyz" firstAttribute="top" secondItem="cRs-UI-oCP" secondAttribute="bottom" constant="16" id="3Ho-D5-GFS"/>
+                                            <constraint firstItem="FcV-SU-xyz" firstAttribute="leading" secondItem="sEy-cn-haL" secondAttribute="leading" constant="16" id="FcV-c5-jkl"/>
+                                            <constraint firstAttribute="trailing" secondItem="FcV-SU-xyz" secondAttribute="trailing" constant="16" id="FcV-c6-mno"/>
                                             <constraint firstItem="3Dq-NE-1xW" firstAttribute="top" secondItem="sEy-cn-haL" secondAttribute="top" id="JVZ-kX-TkD"/>
-                                            <constraint firstAttribute="bottom" secondItem="cRs-UI-oCP" secondAttribute="bottom" constant="20" id="QFd-uE-XU3"/>
+                                            <constraint firstAttribute="bottom" secondItem="FcV-SU-xyz" secondAttribute="bottom" constant="20" id="QFd-uE-XU3"/>
                                             <constraint firstItem="rES-Pe-3sW" firstAttribute="leading" secondItem="sEy-cn-haL" secondAttribute="leading" constant="16" id="R0v-GG-mKO"/>
                                             <constraint firstAttribute="trailing" secondItem="rES-Pe-3sW" secondAttribute="trailing" constant="16" id="df7-Vd-hpn"/>
                                             <constraint firstItem="3Dq-NE-1xW" firstAttribute="leading" secondItem="sEy-cn-haL" secondAttribute="leading" constant="16" id="eV1-cL-4wF"/>
                                             <constraint firstAttribute="trailing" secondItem="3Dq-NE-1xW" secondAttribute="trailing" constant="16" id="flL-zs-66U"/>
-                                            <constraint firstAttribute="trailing" secondItem="cRs-UI-oCP" secondAttribute="trailing" constant="16" id="xL6-ua-Rg1"/>
                                             <constraint firstItem="rES-Pe-3sW" firstAttribute="top" relation="greaterThanOrEqual" secondItem="3Dq-NE-1xW" secondAttribute="bottom" constant="24" id="y53-S4-4Eh"/>
                                         </constraints>
                                     </view>
@@ -374,6 +394,7 @@
                     <connections>
                         <outlet property="continueButton" destination="cRs-UI-oCP" id="b1P-3f-Ee9"/>
                         <outlet property="emailTextField" destination="xKl-Fk-xu6" id="ukv-Ml-B4h"/>
+                        <outlet property="loginButton" destination="FcV-SU-xyz" id="FcV-o2-pqr"/>
                         <outlet property="firstNameTextField" destination="c5T-qR-Eee" id="nAH-GF-Bch"/>
                         <outlet property="lastNameTextField" destination="wDB-Ii-Onr" id="8Kr-cQ-AyE"/>
                         <outlet property="phoneNumberTextField" destination="kN0-tr-fTj" id="J4T-QS-YO2"/>
@@ -384,6 +405,81 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="130.53435114503816" y="-34.507042253521128"/>
+        </scene>
+        <!--Login Screen-->
+        <scene sceneID="Lgn-Sc-001">
+            <objects>
+                <viewController storyboardIdentifier="LoginScreen" id="Lgn-VC-001" customClass="LoginScreen" customModule="BinbagVerify" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Lgn-Vw-001">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Login" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lgn-Lb-001">
+                                <rect key="frame" x="16" y="103" width="361" height="36"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="30"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enter your email and verify your face" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lgn-Lb-002">
+                                <rect key="frame" x="16" y="147" width="361" height="21"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
+                                <color key="textColor" systemColor="secondaryLabelColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Lgn-Tf-001">
+                                <rect key="frame" x="16" y="200" width="361" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="Lgn-h1-001"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
+                                <textInputTraits key="textInputTraits" keyboardType="emailAddress" textContentType="emailAddress"/>
+                            </textField>
+                            <button opaque="NO" alpha="0.20000000000000001" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Lgn-Bt-001" customClass="dateSportButton" customModule="BinbagVerify" customModuleProvider="target">
+                                <rect key="frame" x="16" y="274" width="361" height="56"/>
+                                <color key="backgroundColor" red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="56" id="Lgn-h2-001"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="18"/>
+                                <state key="normal" title="Face Detection">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="8"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="onFaceDetection:" destination="Lgn-VC-001" eventType="touchUpInside" id="Lgn-Ac-001"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Lgn-Sa-001"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="Lgn-Lb-001" firstAttribute="top" secondItem="Lgn-Sa-001" secondAttribute="top" constant="44" id="Lgn-c1-001"/>
+                            <constraint firstItem="Lgn-Lb-001" firstAttribute="leading" secondItem="Lgn-Vw-001" secondAttribute="leading" constant="16" id="Lgn-c2-001"/>
+                            <constraint firstAttribute="trailing" secondItem="Lgn-Lb-001" secondAttribute="trailing" constant="16" id="Lgn-c3-001"/>
+                            <constraint firstItem="Lgn-Lb-002" firstAttribute="top" secondItem="Lgn-Lb-001" secondAttribute="bottom" constant="8" id="Lgn-c4-001"/>
+                            <constraint firstItem="Lgn-Lb-002" firstAttribute="leading" secondItem="Lgn-Vw-001" secondAttribute="leading" constant="16" id="Lgn-c5-001"/>
+                            <constraint firstAttribute="trailing" secondItem="Lgn-Lb-002" secondAttribute="trailing" constant="16" id="Lgn-c6-001"/>
+                            <constraint firstItem="Lgn-Tf-001" firstAttribute="top" secondItem="Lgn-Lb-002" secondAttribute="bottom" constant="32" id="Lgn-c7-001"/>
+                            <constraint firstItem="Lgn-Tf-001" firstAttribute="leading" secondItem="Lgn-Vw-001" secondAttribute="leading" constant="16" id="Lgn-c8-001"/>
+                            <constraint firstAttribute="trailing" secondItem="Lgn-Tf-001" secondAttribute="trailing" constant="16" id="Lgn-c9-001"/>
+                            <constraint firstItem="Lgn-Bt-001" firstAttribute="top" secondItem="Lgn-Tf-001" secondAttribute="bottom" constant="24" id="Lgn-c10-001"/>
+                            <constraint firstItem="Lgn-Bt-001" firstAttribute="leading" secondItem="Lgn-Vw-001" secondAttribute="leading" constant="16" id="Lgn-c11-001"/>
+                            <constraint firstAttribute="trailing" secondItem="Lgn-Bt-001" secondAttribute="trailing" constant="16" id="Lgn-c12-001"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Login" id="Lgn-Ni-001"/>
+                    <connections>
+                        <outlet property="emailTextField" destination="Lgn-Tf-001" id="Lgn-o1-001"/>
+                        <outlet property="faceDetectionButton" destination="Lgn-Bt-001" id="Lgn-o2-001"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Lgn-Fr-001" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="870" y="-600"/>
         </scene>
         <!--Contract Screen-->
         <scene sceneID="cQh-vq-0xN">
