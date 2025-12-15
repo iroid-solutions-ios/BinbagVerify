@@ -272,75 +272,7 @@ class Utility: NSObject {
         return String(Int(timestamp))
     }
     
-    class func setUpCurrentWeekDates() -> [DayListModel] {
-        
-        let dateFormatter = DateFormatter()
-        let dayFormatter = DateFormatter()
-        let fullDayFormatter = DateFormatter()
-        
-        dateFormatter.dateFormat = D
-        dayFormatter.dateFormat = EE
-        fullDayFormatter.dateFormat = MM_DD_YYYY
-        dateFormatter.locale = Locale(identifier: Utility.getCurrentLanguage())
-        dayFormatter.locale = Locale(identifier: Utility.getCurrentLanguage())
-        fullDayFormatter.locale = Locale(identifier: Utility.getCurrentLanguage())
-        
-        let calendar = Calendar.current
-        
-        return Utility.currentWeekDates().map { day in
-            
-            return DayListModel(
-                day: dayFormatter.string(from: day),
-                date: dateFormatter.string(from: day),
-                isDisable: calendar.startOfDay(for: day) < calendar.startOfDay(for: Date()),
-                fullDate: fullDayFormatter.string(from: day)
-            )
-        }
-    }
-    
-    class func getPreviousYearsAsStrings(count: Int) -> [String] {
-        let currentYear = Calendar.current.component(.year, from: Date())
-        return (0...count).map { String(currentYear - $0) }
-    }
-
-    class func setUpAvailableTime() -> [TimeModel] {
-        var hourList = [TimeModel]()
-        let calendar = Calendar.current
-        let dateFormatter = DateFormatter()
-        
-        // Setup once
-        dateFormatter.dateFormat = HH_MM
-        dateFormatter.locale = Locale(identifier: Utility.getCurrentLanguage())
-        
-        // Use for loop to avoid unnecessary range iteration
-        for hour in START_TIME...END_TIME {
-            if let date = calendar.date(bySettingHour: hour, minute: 0, second: 0, of: Date()) {
-                let hourString = dateFormatter.string(from: date)
-                hourList.append(TimeModel(title: hourString))
-            }
-        }
-        
-        return hourList
-    }
-    
-    static func setUpAvailableTime(selectedHour: Int?) -> [TimeModel] {
-        var hourList = [TimeModel]()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = HH_MM // Adjust the format as needed
-        dateFormatter.locale = Locale(identifier: Utility.getCurrentLanguage())
-        
-        for hour in START_TIME...END_TIME {
-            if let date = Calendar.current.date(bySettingHour: hour, minute: 0, second: 0, of: Date()) {
-                let hourString = dateFormatter.string(from: date)
-                
-                // Determine if the hour should be disabled
-                let isDisable = selectedHour.map { hour > (END_TIME - $0) } ?? false
-                
-                hourList.append(TimeModel(title: hourString, isDisable: isDisable))
-            }
-        }
-        return hourList
-    }
+   
     
     class func getTimeInLOCALFormat(_ strDate: String) -> String
     {

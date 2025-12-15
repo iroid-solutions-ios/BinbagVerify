@@ -59,7 +59,7 @@
                                 <rect key="frame" x="0.0" y="119" width="393" height="699"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sEy-cn-haL">
-                                        <rect key="frame" x="0.0" y="0.0" width="393" height="699"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="393" height="722.33333333333337"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="3Dq-NE-1xW">
                                                 <rect key="frame" x="16" y="0.0" width="361" height="484"/>
@@ -308,14 +308,14 @@
                                                 </subviews>
                                             </stackView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rES-Pe-3sW">
-                                                <rect key="frame" x="16" y="556.66666666666663" width="361" height="50.333333333333371"/>
+                                                <rect key="frame" x="16" y="507.99999999999994" width="361" height="50.333333333333314"/>
                                                 <string key="text">2024 Id-verified.com. By submitting this form, you agree to be bound by the terms of service &amp; Privacy Policy &amp; understand that none of your personal information will be sold.</string>
                                                 <fontDescription key="fontDescription" name="SFProDisplay-Regular" family="SF Pro Display" pointSize="14"/>
                                                 <color key="textColor" name="#020617"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <button opaque="NO" userInteractionEnabled="NO" alpha="0.20000000000000001" contentMode="scaleToFill" semanticContentAttribute="forceRightToLeft" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cRs-UI-oCP" customClass="dateSportButton" customModule="BinbagVerify" customModuleProvider="target">
-                                                <rect key="frame" x="16" y="623" width="361" height="56"/>
+                                                <rect key="frame" x="16" y="574.33333333333337" width="361" height="56"/>
                                                 <color key="backgroundColor" red="0.22745098039215686" green="0.70980392156862748" blue="0.29019607843137257" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="56" id="NV2-Gb-d7b"/>
@@ -333,7 +333,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FcV-SU-xyz" customClass="dateSportButton" customModule="BinbagVerify" customModuleProvider="target">
-                                                <rect key="frame" x="16" y="695" width="361" height="56"/>
+                                                <rect key="frame" x="16" y="646.33333333333337" width="361" height="56"/>
                                                 <color key="backgroundColor" red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="56" id="FcV-h2-abc"/>
@@ -352,10 +352,9 @@
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
-                                            <constraint firstItem="cRs-UI-oCP" firstAttribute="top" secondItem="rES-Pe-3sW" secondAttribute="bottom" constant="16" id="FcV-c4-ghi"/>
-                                            <constraint firstItem="cRs-UI-oCP" firstAttribute="leading" secondItem="sEy-cn-haL" secondAttribute="leading" constant="16" id="ALE-Ma-55E"/>
-                                            <constraint firstAttribute="trailing" secondItem="cRs-UI-oCP" secondAttribute="trailing" constant="16" id="xL6-ua-Rg1"/>
                                             <constraint firstItem="FcV-SU-xyz" firstAttribute="top" secondItem="cRs-UI-oCP" secondAttribute="bottom" constant="16" id="3Ho-D5-GFS"/>
+                                            <constraint firstItem="cRs-UI-oCP" firstAttribute="leading" secondItem="sEy-cn-haL" secondAttribute="leading" constant="16" id="ALE-Ma-55E"/>
+                                            <constraint firstItem="cRs-UI-oCP" firstAttribute="top" secondItem="rES-Pe-3sW" secondAttribute="bottom" constant="16" id="FcV-c4-ghi"/>
                                             <constraint firstItem="FcV-SU-xyz" firstAttribute="leading" secondItem="sEy-cn-haL" secondAttribute="leading" constant="16" id="FcV-c5-jkl"/>
                                             <constraint firstAttribute="trailing" secondItem="FcV-SU-xyz" secondAttribute="trailing" constant="16" id="FcV-c6-mno"/>
                                             <constraint firstItem="3Dq-NE-1xW" firstAttribute="top" secondItem="sEy-cn-haL" secondAttribute="top" id="JVZ-kX-TkD"/>
@@ -364,6 +363,7 @@
                                             <constraint firstAttribute="trailing" secondItem="rES-Pe-3sW" secondAttribute="trailing" constant="16" id="df7-Vd-hpn"/>
                                             <constraint firstItem="3Dq-NE-1xW" firstAttribute="leading" secondItem="sEy-cn-haL" secondAttribute="leading" constant="16" id="eV1-cL-4wF"/>
                                             <constraint firstAttribute="trailing" secondItem="3Dq-NE-1xW" secondAttribute="trailing" constant="16" id="flL-zs-66U"/>
+                                            <constraint firstAttribute="trailing" secondItem="cRs-UI-oCP" secondAttribute="trailing" constant="16" id="xL6-ua-Rg1"/>
                                             <constraint firstItem="rES-Pe-3sW" firstAttribute="top" relation="greaterThanOrEqual" secondItem="3Dq-NE-1xW" secondAttribute="bottom" constant="24" id="y53-S4-4Eh"/>
                                         </constraints>
                                     </view>
@@ -394,9 +394,9 @@
                     <connections>
                         <outlet property="continueButton" destination="cRs-UI-oCP" id="b1P-3f-Ee9"/>
                         <outlet property="emailTextField" destination="xKl-Fk-xu6" id="ukv-Ml-B4h"/>
-                        <outlet property="loginButton" destination="FcV-SU-xyz" id="FcV-o2-pqr"/>
                         <outlet property="firstNameTextField" destination="c5T-qR-Eee" id="nAH-GF-Bch"/>
                         <outlet property="lastNameTextField" destination="wDB-Ii-Onr" id="8Kr-cQ-AyE"/>
+                        <outlet property="loginButton" destination="FcV-SU-xyz" id="FcV-o2-pqr"/>
                         <outlet property="phoneNumberTextField" destination="kN0-tr-fTj" id="J4T-QS-YO2"/>
                         <outlet property="selectTermsAndCondition" destination="xgJ-Ui-9A5" id="5ZD-Em-8ER"/>
                         <outlet property="termsConditionTextView" destination="7Le-Qy-en5" id="3yj-9f-Sal"/>
@@ -406,7 +406,7 @@
             </objects>
             <point key="canvasLocation" x="130.53435114503816" y="-34.507042253521128"/>
         </scene>
-        <!--Login Screen-->
+        <!--Login-->
         <scene sceneID="Lgn-Sc-001">
             <objects>
                 <viewController storyboardIdentifier="LoginScreen" id="Lgn-VC-001" customClass="LoginScreen" customModule="BinbagVerify" customModuleProvider="target" sceneMemberID="viewController">
@@ -421,13 +421,13 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enter your email and verify your face" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lgn-Lb-002">
-                                <rect key="frame" x="16" y="147" width="361" height="21"/>
+                                <rect key="frame" x="16" y="147" width="361" height="20"/>
                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                 <color key="textColor" systemColor="secondaryLabelColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Lgn-Tf-001">
-                                <rect key="frame" x="16" y="200" width="361" height="50"/>
+                                <rect key="frame" x="16" y="199" width="361" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="Lgn-h1-001"/>
                                 </constraints>
@@ -435,7 +435,7 @@
                                 <textInputTraits key="textInputTraits" keyboardType="emailAddress" textContentType="emailAddress"/>
                             </textField>
                             <button opaque="NO" alpha="0.20000000000000001" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Lgn-Bt-001" customClass="dateSportButton" customModule="BinbagVerify" customModuleProvider="target">
-                                <rect key="frame" x="16" y="274" width="361" height="56"/>
+                                <rect key="frame" x="16" y="273" width="361" height="56"/>
                                 <color key="backgroundColor" red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="56" id="Lgn-h2-001"/>
@@ -458,6 +458,9 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="Lgn-Lb-001" firstAttribute="top" secondItem="Lgn-Sa-001" secondAttribute="top" constant="44" id="Lgn-c1-001"/>
+                            <constraint firstItem="Lgn-Bt-001" firstAttribute="top" secondItem="Lgn-Tf-001" secondAttribute="bottom" constant="24" id="Lgn-c10-001"/>
+                            <constraint firstItem="Lgn-Bt-001" firstAttribute="leading" secondItem="Lgn-Vw-001" secondAttribute="leading" constant="16" id="Lgn-c11-001"/>
+                            <constraint firstAttribute="trailing" secondItem="Lgn-Bt-001" secondAttribute="trailing" constant="16" id="Lgn-c12-001"/>
                             <constraint firstItem="Lgn-Lb-001" firstAttribute="leading" secondItem="Lgn-Vw-001" secondAttribute="leading" constant="16" id="Lgn-c2-001"/>
                             <constraint firstAttribute="trailing" secondItem="Lgn-Lb-001" secondAttribute="trailing" constant="16" id="Lgn-c3-001"/>
                             <constraint firstItem="Lgn-Lb-002" firstAttribute="top" secondItem="Lgn-Lb-001" secondAttribute="bottom" constant="8" id="Lgn-c4-001"/>
@@ -466,9 +469,6 @@
                             <constraint firstItem="Lgn-Tf-001" firstAttribute="top" secondItem="Lgn-Lb-002" secondAttribute="bottom" constant="32" id="Lgn-c7-001"/>
                             <constraint firstItem="Lgn-Tf-001" firstAttribute="leading" secondItem="Lgn-Vw-001" secondAttribute="leading" constant="16" id="Lgn-c8-001"/>
                             <constraint firstAttribute="trailing" secondItem="Lgn-Tf-001" secondAttribute="trailing" constant="16" id="Lgn-c9-001"/>
-                            <constraint firstItem="Lgn-Bt-001" firstAttribute="top" secondItem="Lgn-Tf-001" secondAttribute="bottom" constant="24" id="Lgn-c10-001"/>
-                            <constraint firstItem="Lgn-Bt-001" firstAttribute="leading" secondItem="Lgn-Vw-001" secondAttribute="leading" constant="16" id="Lgn-c11-001"/>
-                            <constraint firstAttribute="trailing" secondItem="Lgn-Bt-001" secondAttribute="trailing" constant="16" id="Lgn-c12-001"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Login" id="Lgn-Ni-001"/>
@@ -479,7 +479,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Lgn-Fr-001" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="870" y="-600"/>
+            <point key="canvasLocation" x="1674" y="-27"/>
         </scene>
         <!--Contract Screen-->
         <scene sceneID="cQh-vq-0xN">
@@ -588,7 +588,7 @@ ID-VERIFIED.com known as (We)
                                                                         <rect key="frame" x="0.0" y="22" width="361" height="62"/>
                                                                         <subviews>
                                                                             <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Signature" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Qaf-Sd-ZsM">
-                                                                                <rect key="frame" x="16" y="16" width="329" height="30"/>
+                                                                                <rect key="frame" x="16" y="16" width="329" height="29.999999999999993"/>
                                                                                 <color key="textColor" name="TextColor#000000"/>
                                                                                 <fontDescription key="fontDescription" name="SFProDisplay-Regular" family="SF Pro Display" pointSize="17"/>
                                                                                 <textInputTraits key="textInputTraits" keyboardType="emailAddress"/>
@@ -841,6 +841,9 @@ ID-VERIFIED.com known as (We)
         </namedColor>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="secondaryLabelColor">
+            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

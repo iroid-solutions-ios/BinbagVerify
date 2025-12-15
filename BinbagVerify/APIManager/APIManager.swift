@@ -370,107 +370,107 @@ class APIManager {
         }
     }
     
-    func requestWithMultipleMedia(method: HTTPMethod,urlString : String, documentParameterName : String,documentListArray : [UploadMediaTypes]?, parameters : [String:Any],success : @escaping(Int,Response) -> (),failure : @escaping(String) -> ()){
-        
-        if isConnectedToNetwork() == false {
-            failure("No internet available.")
-            return
-        }
-        
-        if isAppInTestMode {
-            print("url ----> ", urlString)
-            print("parameters ----> ", parameters)
-            print("headers ----> ", getHeader())
-        }
-        
-        Alamofire.upload(multipartFormData:{(multipartFormData) in
-            documentListArray?.forEach { obj in
-                guard let data = obj.data, let mediaType = obj.type else { return }
-
-                let fileName: String
-                let mimeType: String
-
-                switch mediaType {
-                case .IMAGE:
-                    fileName = (obj.fileName ?? getFileName()) + ".jpg"
-                    mimeType = "image/jpg"
-                    
-                case .VIDEO:
-                    fileName = (obj.fileName ?? getFileName()) + ".mp4"
-                    mimeType = "video/mp4"
-                    
-                case .DOCUMENT:
-                    fileName = (obj.fileName ?? getFileName()) + ".pdf"
-                    mimeType = "application/pdf"
-                    
-                default:
-                    return
-                }
-
-                multipartFormData.append(data, withName: documentParameterName, fileName: fileName, mimeType: mimeType)
-            }
-
-            for (key, value) in parameters {
-                multipartFormData.append((value as AnyObject).data(using: String.Encoding.utf8.rawValue)!, withName: key)
-            }
-            
-            print("Multipart form data parameters", parameters)
-            
-        }, to:urlString,method: method,headers:getHeader()){ (result) in
-            switch result {
-            case .success(let upload, _, _):
-                
-                upload.uploadProgress(closure: { (progress) in
-                    print("Upload Progress: \(progress.fractionCompleted)")
-                    //                    SVProgressHUD.showProgress(Float(progress.fractionCompleted), status: "Uploading...")
-                })
-                
-                upload.responseObject { (response: DataResponse<Response>) in
-                    switch response.result{
-                    case .success(let value):
-                        guard let statusCode = response.response?.statusCode else {
-                            failure(value.message ?? "")
-                            return
-                        }
-                        
-                        if isAppInTestMode {
-                            print("response ----> ", response.result.value?.toJSON() as Any)
-                        }
-                        
-                        if (200..<300).contains(statusCode) {
-                            success(statusCode,value)
-                        }
-                        else if statusCode == 401 {
-                            // failure(value.message ?? "")
-                            Utility.clearNotifications()
-                            Utility.hideIndicator()
-                            Utility.removeUserData()
-                            Utility.setRootLoginRegisterViewController()
-                            userDefaults.setGuestUserLoggedIn(value: false)
-                            userDefaults.removeObject(forKey: UserDefaultsKeys.isGuestUser.rawValue)
-                            userDefaults.clearUserDefaultsValues()
-                        }
-                        else if statusCode == 402 {
-                            failure(value.message ?? "")
-                        }
-                        else if statusCode == 403 {
-                            success(statusCode,value)
-                        }
-                        else {
-                            failure(value.message ?? "")
-                        }
-                        break
-                    case .failure(let error):
-                        failure(error.localizedDescription)
-                        break
-                    }
-                    
-                }
-            case .failure(let error):
-                failure(error.localizedDescription)
-            }
-        }
-    }
+//    func requestWithMultipleMedia(method: HTTPMethod,urlString : String, documentParameterName : String,documentListArray : [UploadMediaTypes]?, parameters : [String:Any],success : @escaping(Int,Response) -> (),failure : @escaping(String) -> ()){
+//        
+//        if isConnectedToNetwork() == false {
+//            failure("No internet available.")
+//            return
+//        }
+//        
+//        if isAppInTestMode {
+//            print("url ----> ", urlString)
+//            print("parameters ----> ", parameters)
+//            print("headers ----> ", getHeader())
+//        }
+//        
+//        Alamofire.upload(multipartFormData:{(multipartFormData) in
+//            documentListArray?.forEach { obj in
+//                guard let data = obj.data, let mediaType = obj.type else { return }
+//
+//                let fileName: String
+//                let mimeType: String
+//
+//                switch mediaType {
+//                case .IMAGE:
+//                    fileName = (obj.fileName ?? getFileName()) + ".jpg"
+//                    mimeType = "image/jpg"
+//                    
+//                case .VIDEO:
+//                    fileName = (obj.fileName ?? getFileName()) + ".mp4"
+//                    mimeType = "video/mp4"
+//                    
+//                case .DOCUMENT:
+//                    fileName = (obj.fileName ?? getFileName()) + ".pdf"
+//                    mimeType = "application/pdf"
+//                    
+//                default:
+//                    return
+//                }
+//
+//                multipartFormData.append(data, withName: documentParameterName, fileName: fileName, mimeType: mimeType)
+//            }
+//
+//            for (key, value) in parameters {
+//                multipartFormData.append((value as AnyObject).data(using: String.Encoding.utf8.rawValue)!, withName: key)
+//            }
+//            
+//            print("Multipart form data parameters", parameters)
+//            
+//        }, to:urlString,method: method,headers:getHeader()){ (result) in
+//            switch result {
+//            case .success(let upload, _, _):
+//                
+//                upload.uploadProgress(closure: { (progress) in
+//                    print("Upload Progress: \(progress.fractionCompleted)")
+//                    //                    SVProgressHUD.showProgress(Float(progress.fractionCompleted), status: "Uploading...")
+//                })
+//                
+//                upload.responseObject { (response: DataResponse<Response>) in
+//                    switch response.result{
+//                    case .success(let value):
+//                        guard let statusCode = response.response?.statusCode else {
+//                            failure(value.message ?? "")
+//                            return
+//                        }
+//                        
+//                        if isAppInTestMode {
+//                            print("response ----> ", response.result.value?.toJSON() as Any)
+//                        }
+//                        
+//                        if (200..<300).contains(statusCode) {
+//                            success(statusCode,value)
+//                        }
+//                        else if statusCode == 401 {
+//                            // failure(value.message ?? "")
+//                            Utility.clearNotifications()
+//                            Utility.hideIndicator()
+//                            Utility.removeUserData()
+//                            Utility.setRootLoginRegisterViewController()
+//                            userDefaults.setGuestUserLoggedIn(value: false)
+//                            userDefaults.removeObject(forKey: UserDefaultsKeys.isGuestUser.rawValue)
+//                            userDefaults.clearUserDefaultsValues()
+//                        }
+//                        else if statusCode == 402 {
+//                            failure(value.message ?? "")
+//                        }
+//                        else if statusCode == 403 {
+//                            success(statusCode,value)
+//                        }
+//                        else {
+//                            failure(value.message ?? "")
+//                        }
+//                        break
+//                    case .failure(let error):
+//                        failure(error.localizedDescription)
+//                        break
+//                    }
+//                    
+//                }
+//            case .failure(let error):
+//                failure(error.localizedDescription)
+//            }
+//        }
+//    }
     
     func requestWithMultipleImage(urlString : String, imageParameterName : String,images : [Data]?, layoutParameterName : String, layoutImage : Data?, threeSixtyLayoutParameterName : String,ThreeSixtyLayout: Data?, videoParameterName: String, videoData : Data?, audioParameterName : String, audioData : Data?, bgThumbnailParameter : String, bgThumbImage : Data?, videoPreviewParameter : String, videoPreview : Data?, parameters : [String:Any],success : @escaping(Int,Response) -> (),failure : @escaping(String) -> ()){
         
