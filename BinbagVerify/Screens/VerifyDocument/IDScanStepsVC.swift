@@ -445,12 +445,16 @@ final class IDScanStepsVC: UIViewController {
         
         if Utility.isInternetAvailable() {
             Utility.showIndicator()
-            AuthServices.shared.uploadDocument(parameters: request.toJSON(), documentFrontImageData: documentFront, documentBackImageData: documentBack, faceImageData: livePhoto, success: {  [weak self] (statusCode, response) in
+            AuthServices.shared.uploadDocument(parameters: request.toParameters(), documentFrontImageData: documentFront, documentBackImageData: documentBack, faceImageData: livePhoto, success: {  [weak self] (statusCode, response) in
                 guard let self = self else { return }
                 Utility.hideIndicator()
 
                 if let res = response.documentVerificationData {
-                    print(res.toJSON())
+                    // Debug print using JSONEncoder
+                    if let jsonData = try? JSONEncoder().encode(res),
+                       let jsonString = String(data: jsonData, encoding: .utf8) {
+                        print(jsonString)
+                    }
                     // Navigate to VerifiedScreen with data
                     if let vc = STORYBOARD.verifyAccount.instantiateViewController(withIdentifier: "VerifiedScreen") as? VerifiedScreen {
                         vc.verificationData = res
@@ -462,7 +466,7 @@ final class IDScanStepsVC: UIViewController {
                 guard let selfScreen = self else { return }
                 Utility.hideIndicator()
                 Utility.showAlert(vc: selfScreen, message: error)
-                
+
             })
             
         } else {

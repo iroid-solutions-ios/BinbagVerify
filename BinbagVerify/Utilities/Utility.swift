@@ -10,7 +10,7 @@ import UIKit
 //import FTPopOverMenu_Swift
 //import Alamofire
 import AVFoundation
-import SDWebImage
+//import SDWebImage
 import Photos
 import NotificationBannerSwift
 
@@ -514,16 +514,16 @@ class Utility: NSObject {
          */
     }
     
-    class func blurImage(_ imageUrl: String!, imageView: UIImageView!) {
-        if imageUrl != nil && !(imageUrl == "") {
-            imageView.sd_imageIndicator = SDWebImageActivityIndicator.gray
-            imageView.sd_setImage(with: URL(string: imageUrl!), placeholderImage: UIImage(named: "place_holder_image.png")) { image, error, sdkType, imageUrl in
-                blurEffect(profileImageView: imageView, image: image ?? UIImage())
-            }
-        } else {
-            imageView?.image = UIImage(named: "place_holder_image.png")
-        }
-    }
+//    class func blurImage(_ imageUrl: String!, imageView: UIImageView!) {
+//        if imageUrl != nil && !(imageUrl == "") {
+//            imageView.sd_imageIndicator = SDWebImageActivityIndicator.gray
+//            imageView.sd_setImage(with: URL(string: imageUrl!), placeholderImage: UIImage(named: "place_holder_image.png")) { image, error, sdkType, imageUrl in
+//                blurEffect(profileImageView: imageView, image: image ?? UIImage())
+//            }
+//        } else {
+//            imageView?.image = UIImage(named: "place_holder_image.png")
+//        }
+//    }
 
     class func blurEffect(profileImageView: UIImageView!, image: UIImage?) {
         guard let inputImage = CIImage(image: image ?? UIImage()) else { return }
@@ -564,18 +564,18 @@ class Utility: NSObject {
         UserDefaults.standard.removeObject(forKey: PURCHASE_DATA)
     }
     
-    class func setImage(_ imageUrl: String!, imageView: UIImageView!) {
-        if imageUrl != nil && !(imageUrl == "") {
-            imageView.sd_imageIndicator = SDWebImageActivityIndicator.gray
-            // imageView.sd_setShowActivityIndicatorView(true)
-            // imageView.sd_setIndicatorStyle(.gray)
-            imageView!.sd_setImage(with: URL(string: imageUrl.replacingOccurrences(of: " ", with: "%20") ), placeholderImage: UIImage(named: "image_placeholder"))
-        }
-        else
-        {
-            imageView?.image = UIImage(named: "image_placeholder")
-        }
-    }
+//    class func setImage(_ imageUrl: String!, imageView: UIImageView!) {
+//        if imageUrl != nil && !(imageUrl == "") {
+//            imageView.sd_imageIndicator = SDWebImageActivityIndicator.gray
+//            // imageView.sd_setShowActivityIndicatorView(true)
+//            // imageView.sd_setIndicatorStyle(.gray)
+//            imageView!.sd_setImage(with: URL(string: imageUrl.replacingOccurrences(of: " ", with: "%20") ), placeholderImage: UIImage(named: "image_placeholder"))
+//        }
+//        else
+//        {
+//            imageView?.image = UIImage(named: "image_placeholder")
+//        }
+//    }
     
 //    class func setSvgImage(_ imageUrl: String!, imageView: UIImageView!) {
 //

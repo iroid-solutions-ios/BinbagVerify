@@ -119,11 +119,11 @@ class SignUpScreen: UIViewController {
             //signUpAPI(residenceId: selectResidenceId)
             if let vc = STORYBOARD.auth.instantiateViewController(withIdentifier: "ContractScreen") as? ContractScreen {
                 signUpRequest = SignUpRequest(firstName: firstNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
-                                                                lastName: lastNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
-                                                                email: emailTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
+                                              email: emailTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), lastName: lastNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
                                                                 countryCode: "+1",
                                                                 phoneNumber: phoneNumberTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines))
-                print(signUpRequest?.toJSON())
+                // Debug print using toParameters
+                print(signUpRequest?.toParameters() ?? [:])
                 self.navigationController?.pushViewController(vc, animated: true)
             }
         }

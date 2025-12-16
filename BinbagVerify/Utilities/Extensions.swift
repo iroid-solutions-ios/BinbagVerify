@@ -11,7 +11,7 @@ import Photos
 import Foundation
 import MobileCoreServices
 import MediaPlayer
-import SDWebImage
+//import SDWebImage
 import CoreMotion
 
 struct TrimError: Error
@@ -1462,18 +1462,18 @@ extension UIImageView {
         return CGRect(x: x, y: y, width: size.width, height: size.height)
     }
     
-    func getImage(url: String, placeholderImage:  UIImage?, success:@escaping (_ _result : Any? ) -> Void,  failer:@escaping (_ _result : Any? ) -> Void) {
-        self.sd_imageIndicator = SDWebImageActivityIndicator.gray
-        self.sd_setImage(with: URL(string: url), placeholderImage:  placeholderImage, options: SDWebImageOptions(rawValue: 0), completed: { image, error, cacheType, imageURL in
-            // your rest code
-            if error == nil {
-                self.image = image
-                success(true)
-            }else {
-                failer(false)
-            }
-        })
-    }
+//    func getImage(url: String, placeholderImage:  UIImage?, success:@escaping (_ _result : Any? ) -> Void,  failer:@escaping (_ _result : Any? ) -> Void) {
+//        self.sd_imageIndicator = SDWebImageActivityIndicator.gray
+//        self.sd_setImage(with: URL(string: url), placeholderImage:  placeholderImage, options: SDWebImageOptions(rawValue: 0), completed: { image, error, cacheType, imageURL in
+//            // your rest code
+//            if error == nil {
+//                self.image = image
+//                success(true)
+//            }else {
+//                failer(false)
+//            }
+//        })
+//    }
     
     // Use of it ^^
     /*

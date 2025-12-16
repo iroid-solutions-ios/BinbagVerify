@@ -84,7 +84,11 @@ class LoginScreen: UIViewController {
                 Utility.hideIndicator()
 
                 if let res = response.documentVerificationData {
-                    print(res.toJSON())
+                    // Debug print using JSONEncoder
+                    if let jsonData = try? JSONEncoder().encode(res),
+                       let jsonString = String(data: jsonData, encoding: .utf8) {
+                        print(jsonString)
+                    }
                     // Navigate to VerifiedScreen with data
                     if let vc = STORYBOARD.verifyAccount.instantiateViewController(withIdentifier: "VerifiedScreen") as? VerifiedScreen {
                         vc.verificationData = res
