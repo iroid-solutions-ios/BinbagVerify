@@ -7,6 +7,7 @@
 
 import UIKit
 import IQKeyboardManagerSwift
+import BinbagVerifyPackage
 
 
 @available(iOS 13.0, *)
@@ -20,12 +21,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         IQKeyboardManager.shared.isEnabled = true
         IQKeyboardManager.shared.resignOnTouchOutside = true
+
+        // Configure BinbagVerify SDK
+        BinbagVerify.configure(with: BinbagVerifyConfig(
+            apiKey: "YOUR_API_KEY",
+            environment: .development
+        ))
+
         setUpViewController()
         return true
     }
-    
+
     func setUpViewController() {
-        if let vc = STORYBOARD.main.instantiateViewController(withIdentifier: "ViewController") as? ViewController {
+        let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
+        if let vc = mainStoryboard.instantiateViewController(withIdentifier: "ViewController") as? ViewController {
             self.navVC = UINavigationController(rootViewController: vc)
             self.navVC?.isNavigationBarHidden = true
             self.navVC?.interactivePopGestureRecognizer?.isEnabled = false
@@ -82,7 +91,7 @@ extension UIViewController {
 //        }
 //    }
     
-    func showWaitingAlert(message: String, for sec: TimeInterval? = nil, image: UIImage? = UIImage(resource: .icLogo)) {
+    func showWaitingAlert(message: String, for sec: TimeInterval? = nil, image: UIImage? = UIImage(named: "ic_logo") ?? UIImage(systemName: "checkmark.shield.fill")) {
         if let alertController = self.currentWaitingAlertController() {
             // Update the message of the existing alert
             UIView.transition(with: alertController.view, duration: 0.2, options: [.transitionCrossDissolve, .curveEaseInOut], animations: {

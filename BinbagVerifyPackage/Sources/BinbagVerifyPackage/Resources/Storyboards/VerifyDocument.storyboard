@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="HelveticaNeue.ttc">
+            <string>HelveticaNeue</string>
+        </array>
+    </customFonts>
+    <scenes>
+        <!--Verified Screen-->
+        <scene sceneID="MNE-QM-dlX">
+            <objects>
+                <viewController storyboardIdentifier="VerifiedScreen" id="IkQ-Gs-gwL" customClass="VerifiedScreen" customModule="BinbagVerify" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="S7p-vh-vWG">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2Bl-jo-O7e">
+                                <rect key="frame" x="24" y="318.33333333333331" width="345" height="240.33333333333331"/>
+                                <subviews>
+                                    <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_logo" translatesAutoresizingMaskIntoConstraints="NO" id="iK6-yK-se8">
+                                        <rect key="frame" x="70.666666666666686" y="0.0" width="204" height="196"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="204" id="2wr-jg-0W8"/>
+                                            <constraint firstAttribute="height" constant="196" id="kk3-V1-w0a"/>
+                                        </constraints>
+                                    </imageView>
+                                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You’re Verified!" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Vvn-TI-kIz">
+                                        <rect key="frame" x="0.0" y="220.00000000000006" width="345" height="20.333333333333343"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" name="TextColor#000000"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="Vvn-TI-kIz" firstAttribute="top" secondItem="iK6-yK-se8" secondAttribute="bottom" constant="24" id="fpP-fl-GPs"/>
+                                    <constraint firstAttribute="bottom" secondItem="Vvn-TI-kIz" secondAttribute="bottom" id="jd3-WD-CpV"/>
+                                    <constraint firstItem="Vvn-TI-kIz" firstAttribute="leading" secondItem="2Bl-jo-O7e" secondAttribute="leading" id="qn9-W5-zNE"/>
+                                    <constraint firstItem="iK6-yK-se8" firstAttribute="centerX" secondItem="2Bl-jo-O7e" secondAttribute="centerX" id="qpc-li-DPg"/>
+                                    <constraint firstItem="Vvn-TI-kIz" firstAttribute="centerX" secondItem="2Bl-jo-O7e" secondAttribute="centerX" id="t78-Ji-hGT"/>
+                                    <constraint firstAttribute="trailing" secondItem="Vvn-TI-kIz" secondAttribute="trailing" id="tVx-dZ-BIl"/>
+                                    <constraint firstItem="iK6-yK-se8" firstAttribute="top" secondItem="2Bl-jo-O7e" secondAttribute="top" id="xTQ-jg-zAB"/>
+                                </constraints>
+                            </view>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" semanticContentAttribute="forceRightToLeft" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KUf-RH-rLa" customClass="dateSportButton" customModule="BinbagVerify" customModuleProvider="target">
+                                <rect key="frame" x="16" y="742" width="361" height="56"/>
+                                <color key="backgroundColor" name="ButtonBG#3AB54A"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="56" id="jMU-7g-GBn"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="18"/>
+                                <inset key="imageEdgeInsets" minX="8" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="Done"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="8"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="onDone:" destination="IkQ-Gs-gwL" eventType="touchUpInside" id="ehb-K3-jYL"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Bqm-q0-Cl1"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="2Bl-jo-O7e" firstAttribute="centerY" secondItem="Bqm-q0-Cl1" secondAttribute="centerY" id="1rf-fd-IMm"/>
+                            <constraint firstItem="2Bl-jo-O7e" firstAttribute="leading" secondItem="Bqm-q0-Cl1" secondAttribute="leading" constant="24" id="74Y-PV-UvG"/>
+                            <constraint firstItem="2Bl-jo-O7e" firstAttribute="centerX" secondItem="Bqm-q0-Cl1" secondAttribute="centerX" id="DhH-fF-fyK"/>
+                            <constraint firstAttribute="trailing" secondItem="KUf-RH-rLa" secondAttribute="trailing" constant="16" id="Mn3-0I-c87"/>
+                            <constraint firstItem="Bqm-q0-Cl1" firstAttribute="bottom" secondItem="KUf-RH-rLa" secondAttribute="bottom" constant="20" id="XIf-PL-7vh"/>
+                            <constraint firstItem="KUf-RH-rLa" firstAttribute="leading" secondItem="Bqm-q0-Cl1" secondAttribute="leading" constant="16" id="h54-6B-qR1"/>
+                            <constraint firstItem="Bqm-q0-Cl1" firstAttribute="trailing" secondItem="2Bl-jo-O7e" secondAttribute="trailing" constant="24" id="xcb-Zh-PRN"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9Yy-mO-OHQ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="178" y="-23"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="ic_logo" width="204" height="196"/>
+        <namedColor name="ButtonBG#3AB54A">
+            <color red="0.22745098039215686" green="0.70980392156862748" blue="0.29019607843137257" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="TextColor#000000">
+            <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

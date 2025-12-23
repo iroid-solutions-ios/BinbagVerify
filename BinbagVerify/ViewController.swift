@@ -7,6 +7,7 @@
 
 import UIKit
 import AVKit
+import BinbagVerifyPackage
 
 class ViewController: UIViewController {
 
@@ -14,44 +15,52 @@ class ViewController: UIViewController {
     @IBOutlet weak var videoPlayerView: UIView!
     @IBOutlet weak var skipButton: UIButton!
     @IBOutlet weak var continueButton: UIButton!
-    
+
     //MARK: - Variables
-    let playerViewController = AVPlayerViewController()
+    let playerViewController = AVPlayerViewController() 
     var player: AVPlayer?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpInitialDetails()
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
          super.viewWillDisappear(animated)
          NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem)
     }
-    
+
     func setUpInitialDetails(){
         self.setUpVideoPlayer()
     }
-    
+
     @IBAction func onSkip(_ sender: UIButton) {
         self.player?.pause()
         self.player = nil
-        if let vc = STORYBOARD.auth.instantiateViewController(withIdentifier: "SignUpScreen") as? SignUpScreen {
-            self.navigationController?.pushViewController(vc, animated: true)
-        }
-//        if let vc = STORYBOARD.auth.instantiateViewController(withIdentifier: "ContractScreen") as? ContractScreen {
-//            self.navigationController?.pushViewController(vc, animated: true)
-//        }
+        startVerification()
     }
-    
+
     @IBAction func onContinue(_ sender: UIButton) {
         self.player?.pause()
         self.player = nil
-        if let vc = STORYBOARD.auth.instantiateViewController(withIdentifier: "SignUpScreen") as? SignUpScreen {
-            self.navigationController?.pushViewController(vc, animated: true)
+        startVerification()
+    }
+
+    private func startVerification() {
+        // Use the BinbagVerify SDK from the package
+        presentBinbagVerification(type: .fullVerification) { [weak self] result in
+            if result.isVerified {
+                print("Verification successful!")
+                if let document = result.documentData?.diveResponse?.document {
+                    print("Name: \(document.fullName ?? "N/A")")
+                }
+            } else if let error = result.error {
+                print("Verification failed: \(error.localizedDescription)")
+                self?.showOKAlert(title: "Error", message: error.localizedDescription)
+            }
         }
     }
-    
+
 }
 
 //MARK: - Setup video Player
