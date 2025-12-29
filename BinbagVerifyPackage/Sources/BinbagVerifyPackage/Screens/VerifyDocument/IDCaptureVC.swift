@@ -136,7 +136,7 @@ public final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate,
 
     public required init?(coder: NSCoder) { nil }
     
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
         setupTopBar()
@@ -152,12 +152,12 @@ public final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate,
 		startSession()
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
+    public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         stopSession()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+    public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 		playFrontHintIfNeeded()
 		playBackHintIfNeeded()
@@ -371,7 +371,7 @@ public final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate,
         previewContainer.addSubview(frontHintContainer)
         frontHintContainer.addSubview(frontHintImageView)
         // Apply correct image based on document type and step
-        frontHintImageView.image = hintImage() ?? UIImage(named: "drivers-license")
+        frontHintImageView.image = hintImage() ?? UIImage.packageImage(named: "drivers-license")
         
         // Gradient scan line
         frontHintScanLine.colors = [
@@ -392,7 +392,7 @@ public final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate,
         previewContainer.addSubview(backHintContainer)
         
         // Back hint image based on document type and step
-        let backImageView = UIImageView(image: hintImage() ?? UIImage(named: "drivers-license"))
+        let backImageView = UIImageView(image: hintImage() ?? UIImage.packageImage(named: "drivers-license"))
         backImageView.contentMode = .scaleAspectFill
         backImageView.clipsToBounds = true
         backImageView.tag = 9991
@@ -537,7 +537,7 @@ public final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate,
     }
     
     // MARK: - Photo delegate
-    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+    public func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         let data = photo.fileDataRepresentation()
         var finalImage: UIImage? = nil
 
@@ -725,7 +725,7 @@ public final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate,
     }
     
     // MARK: - Video brightness
-    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+    public func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         // Wait until hint animation finishes for front/back
         if !isReadyToScan {
             return
@@ -1334,7 +1334,7 @@ public final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate,
     }
     
     // MARK: - Metadata (PDF417 / Face)
-    func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
+    public func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         var sawBarcode = false
         var sawFace = false
         for obj in metadataObjects {
@@ -1350,7 +1350,7 @@ public final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate,
     }
     
     // MARK: - Layout
-    override func viewDidLayoutSubviews() {
+    public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         previewLayer?.frame = previewContainer.bounds
         drawOverlayCutout()
@@ -1458,20 +1458,20 @@ public final class IDCaptureVC: UIViewController, AVCapturePhotoCaptureDelegate,
         // Explicit mappings for assets - with fallbacks
         switch documentType {
             case .driversLicenseOrIDCard:
-                if isFront { return UIImage(named: "DRIVER LICENSE - FRONT") ?? UIImage(named: "drivers-license") }
-                if isBack { return UIImage(named: "DRIVER LICENSE - BACK") ?? UIImage(named: "drivers-license") }
+                if isFront { return UIImage.packageImage(named: "DRIVER LICENSE - FRONT") ?? UIImage.packageImage(named: "drivers-license") }
+                if isBack { return UIImage.packageImage(named: "DRIVER LICENSE - BACK") ?? UIImage.packageImage(named: "drivers-license") }
             case .passport:
                 // Passport uses same image asset for front; back may use front flipped or a generic
-                if isFront { return UIImage(named: "PASSPORT - FRONT") }
-                if isBack { return UIImage(named: "PASSPORT - BACK") ?? UIImage(named: "PASSPORT - FRONT") }
+                if isFront { return UIImage.packageImage(named: "PASSPORT - FRONT") }
+                if isBack { return UIImage.packageImage(named: "PASSPORT - BACK") ?? UIImage.packageImage(named: "PASSPORT - FRONT") }
             case .passportCard:
-                if isFront { return UIImage(named: "PASSPORT CARD - FRONT") ?? UIImage(named: "PASSPORT - FRONT") }
-                if isBack { return UIImage(named: "PASSPORT CARD - BACK") ?? UIImage(named: "PASSPORT - FRONT") }
+                if isFront { return UIImage.packageImage(named: "PASSPORT CARD - FRONT") ?? UIImage.packageImage(named: "PASSPORT - FRONT") }
+                if isBack { return UIImage.packageImage(named: "PASSPORT CARD - BACK") ?? UIImage.packageImage(named: "PASSPORT - FRONT") }
             case .internationalID:
-                if isFront { return UIImage(named: "ID CARD - FRONT") ?? UIImage(named: "DRIVER LICENSE - FRONT") }
-                if isBack { return UIImage(named: "INTERNATIONAL ID - BACK") ?? UIImage(named: "DRIVER LICENSE - BACK") }
+                if isFront { return UIImage.packageImage(named: "ID CARD - FRONT") ?? UIImage.packageImage(named: "DRIVER LICENSE - FRONT") }
+                if isBack { return UIImage.packageImage(named: "INTERNATIONAL ID - BACK") ?? UIImage.packageImage(named: "DRIVER LICENSE - BACK") }
         }
-        return UIImage(named: "drivers-license")
+        return UIImage.packageImage(named: "drivers-license")
     }
     
     private func playFrontHintIfNeeded() {

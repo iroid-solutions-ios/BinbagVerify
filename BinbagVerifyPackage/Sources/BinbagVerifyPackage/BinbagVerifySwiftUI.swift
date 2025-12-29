@@ -85,32 +85,21 @@ public struct BinbagVerifyView: UIViewControllerRepresentable {
 
         switch verificationType {
         case .fullVerification:
-            if let vc = getStoryboard().instantiateViewController(withIdentifier: "SignUpScreen") as? SignUpScreen {
-                viewController = vc
-            } else {
-                viewController = IDScanDocumentTypeVC()
-            }
+            // Start with Introduction Video screen
+            viewController = IntroductionVideoScreen()
 
         case .documentOnly:
-            if let vc = getStoryboard().instantiateViewController(withIdentifier: "IDScanDocumentTypeVC") as? IDScanDocumentTypeVC {
-                viewController = vc
-            } else {
-                viewController = IDScanDocumentTypeVC()
-            }
+            // IDScanDocumentTypeVC is created programmatically (not in storyboard)
+            viewController = IDScanDocumentTypeVC()
 
         case .reverification:
-            if let vc = getStoryboard().instantiateViewController(withIdentifier: "LoginScreen") as? LoginScreen {
-                if let email = userEmail {
-                    vc.loadViewIfNeeded()
-                    vc.emailTextField?.text = email
-                }
-                viewController = vc
-            } else {
-                let faceStep = IDScanStep(title: "Face")
-                let captureVC = IDCaptureVC(documentType: .driversLicenseOrIDCard, stepIndex: 0, step: faceStep)
-                captureVC.isFaceOnlyMode = true
-                viewController = captureVC
+            // Use programmatic LoginScreen
+            let vc = LoginScreen()
+            if let email = userEmail {
+                vc.loadViewIfNeeded()
+                vc.emailTextField.text = email
             }
+            viewController = vc
         }
 
         // Add close button
@@ -135,7 +124,11 @@ public struct BinbagVerifyView: UIViewControllerRepresentable {
     }
 
     private func getStoryboard() -> UIStoryboard {
-        return UIStoryboard(name: "VerifyAccount", bundle: Bundle.module)
+        return UIStoryboard(name: "VerifyDocument", bundle: Bundle.module)
+    }
+
+    private func getAuthStoryboard() -> UIStoryboard {
+        return UIStoryboard(name: "Authentication", bundle: Bundle.module)
     }
 
     // MARK: - Coordinator

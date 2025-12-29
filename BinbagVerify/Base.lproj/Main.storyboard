@@ -1,49 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="DQR-GU-oZx">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="tCW-7n-j2x">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
-        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
-    <customFonts key="customFonts">
-        <array key="HelveticaNeue.ttc">
-            <string>HelveticaNeue</string>
-        </array>
-    </customFonts>
     <scenes>
-        <!--View Controller-->
-        <scene sceneID="40S-yx-TBb">
-            <objects>
-                <viewController id="zN5-ta-xKy" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="i3S-MW-hdj">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jAn-YD-lmn">
-                                <rect key="frame" x="159" y="421" width="75" height="35"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
-                                <connections>
-                                    <action selector="createDocumentForSigning:" destination="zN5-ta-xKy" eventType="touchUpInside" id="af8-ob-Bde"/>
-                                </connections>
-                            </button>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="3Hz-ct-J9W"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <constraints>
-                            <constraint firstItem="jAn-YD-lmn" firstAttribute="centerX" secondItem="3Hz-ct-J9W" secondAttribute="centerX" id="AeN-Vn-OMO"/>
-                            <constraint firstItem="jAn-YD-lmn" firstAttribute="centerY" secondItem="3Hz-ct-J9W" secondAttribute="centerY" id="u2Z-2a-GWN"/>
-                        </constraints>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Vwf-Wn-HZO" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="147" y="-49"/>
-        </scene>
         <!--View Controller-->
         <scene sceneID="Icq-z3-ES0">
             <objects>
@@ -51,89 +16,16 @@
                     <view key="view" contentMode="scaleToFill" id="Eh5-ML-q5B">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Edn-no-LoZ">
-                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </view>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" semanticContentAttribute="forceRightToLeft" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="E2m-IL-r3j" customClass="dateSportButton" customModule="BinbagVerify" customModuleProvider="target">
-                                <rect key="frame" x="16" y="742" width="361" height="56"/>
-                                <color key="backgroundColor" name="ButtonBG#3AB54A"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="56" id="ZDm-6h-N1t"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="18"/>
-                                <inset key="imageEdgeInsets" minX="8" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" title="Continue" image="ic_right_arrow"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                        <real key="value" value="8"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <action selector="onContinue:" destination="tCW-7n-j2x" eventType="touchUpInside" id="H9D-kc-tnS"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="drI-aZ-Wrb">
-                                <rect key="frame" x="326" y="59" width="51" height="38"/>
-                                <inset key="contentEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
-                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" title="Skip">
-                                    <color key="titleColor" name="#0166F4"/>
-                                </state>
-                                <connections>
-                                    <action selector="onSkip:" destination="tCW-7n-j2x" eventType="touchUpInside" id="VAB-ni-mC8"/>
-                                </connections>
-                            </button>
-                        </subviews>
                         <viewLayoutGuide key="safeArea" id="0CE-qL-MFC"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <constraints>
-                            <constraint firstAttribute="bottom" secondItem="Edn-no-LoZ" secondAttribute="bottom" id="1iK-mh-SLh"/>
-                            <constraint firstItem="drI-aZ-Wrb" firstAttribute="top" secondItem="0CE-qL-MFC" secondAttribute="top" id="9Sv-oa-R15"/>
-                            <constraint firstItem="0CE-qL-MFC" firstAttribute="trailing" secondItem="drI-aZ-Wrb" secondAttribute="trailing" constant="16" id="CjD-5d-TWc"/>
-                            <constraint firstItem="Edn-no-LoZ" firstAttribute="leading" secondItem="0CE-qL-MFC" secondAttribute="leading" id="Ldi-bb-tbq"/>
-                            <constraint firstItem="Edn-no-LoZ" firstAttribute="top" secondItem="Eh5-ML-q5B" secondAttribute="top" id="Ltg-QV-21o"/>
-                            <constraint firstItem="0CE-qL-MFC" firstAttribute="trailing" secondItem="E2m-IL-r3j" secondAttribute="trailing" constant="16" id="lB3-Fu-oeA"/>
-                            <constraint firstItem="0CE-qL-MFC" firstAttribute="bottom" secondItem="E2m-IL-r3j" secondAttribute="bottom" constant="20" id="sF5-G0-N8U"/>
-                            <constraint firstItem="E2m-IL-r3j" firstAttribute="leading" secondItem="0CE-qL-MFC" secondAttribute="leading" constant="16" id="ty6-Hh-ZvI"/>
-                            <constraint firstItem="Edn-no-LoZ" firstAttribute="trailing" secondItem="0CE-qL-MFC" secondAttribute="trailing" id="vdV-wH-Gmc"/>
-                        </constraints>
                     </view>
-                    <connections>
-                        <outlet property="continueButton" destination="E2m-IL-r3j" id="OBL-9O-Swd"/>
-                        <outlet property="skipButton" destination="drI-aZ-Wrb" id="N2o-bH-1YA"/>
-                        <outlet property="videoPlayerView" destination="Edn-no-LoZ" id="9CN-Xt-nvG"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IHw-J9-jQF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="973" y="-35"/>
-        </scene>
-        <!--Face Verification Controller-->
-        <scene sceneID="a25-bm-m28">
-            <objects>
-                <viewController storyboardIdentifier="FaceVerificationController" id="DQR-GU-oZx" customClass="FaceVerificationController" customModule="BinbagVerify" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="tPd-ya-yI0">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <viewLayoutGuide key="safeArea" id="M9h-nS-xe9"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="ptn-28-cuv" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-645" y="-79"/>
+            <point key="canvasLocation" x="960" y="-51"/>
         </scene>
     </scenes>
     <resources>
-        <image name="ic_right_arrow" width="24.333333969116211" height="24"/>
-        <namedColor name="#0166F4">
-            <color red="0.0039215686274509803" green="0.40000000000000002" blue="0.95686274509803926" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="ButtonBG#3AB54A">
-            <color red="0.22745098039215686" green="0.70980392156862748" blue="0.29019607843137257" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

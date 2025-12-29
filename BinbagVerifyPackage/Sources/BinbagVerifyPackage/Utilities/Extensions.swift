@@ -14,6 +14,14 @@ import MediaPlayer
 //import SDWebImage
 import CoreMotion
 
+// MARK: - Package Image Loading
+extension UIImage {
+    /// Loads an image from the package's bundle
+    static func packageImage(named name: String) -> UIImage? {
+        return UIImage(named: name, in: Bundle.module, compatibleWith: nil)
+    }
+}
+
 struct TrimError: Error
 {
     let description: String

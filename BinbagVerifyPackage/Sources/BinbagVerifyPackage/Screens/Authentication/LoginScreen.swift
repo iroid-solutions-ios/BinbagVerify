@@ -7,43 +7,150 @@
 
 import UIKit
 
-class LoginScreen: UIViewController {
+public class LoginScreen: UIViewController {
 
-    //MARK: - IBOutlets
-    @IBOutlet weak var emailTextField: UITextField!
-    @IBOutlet weak var faceDetectionButton: UIButton!
+    // MARK: - UI Elements
+    private let backButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage.packageImage(named: "ic_back_arrow") ?? UIImage(systemName: "chevron.left"), for: .normal)
+        button.tintColor = .darkGray
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Login"
+        label.font = UIFont.systemFont(ofSize: 28, weight: .bold)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
+    private let subtitleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Enter your email and verify your face"
+        label.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+        label.textColor = .gray
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
+    public let emailTextField: UITextField = {
+        let textField = UITextField()
+        textField.placeholder = "Email"
+        textField.borderStyle = .none
+        textField.keyboardType = .emailAddress
+        textField.autocapitalizationType = .none
+        textField.autocorrectionType = .no
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        return textField
+    }()
+
+    private let emailUnderlineView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.lightGray.withAlphaComponent(0.5)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
+    private let faceDetectionButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Face Detection", for: .normal)
+        button.setTitleColor(UIColor(red: 0.23, green: 0.71, blue: 0.29, alpha: 1.0), for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+        button.backgroundColor = UIColor(red: 0.23, green: 0.71, blue: 0.29, alpha: 0.1)
+        button.layer.cornerRadius = 25
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
 
     // Store captured face image
     var capturedFaceImage: UIImage?
 
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
-        initialSetup()
-    }
-
-    func initialSetup() {
-        emailTextField.delegate = self
-        emailTextField.addTarget(self, action: #selector(textFieldTextChanged(_:)), for: .editingChanged)
+        setupUI()
+        setupActions()
         updateButtonState()
     }
 
-    @objc func textFieldTextChanged(_ textField: UITextField) {
+    private func setupUI() {
+        view.backgroundColor = .white
+        navigationController?.setNavigationBarHidden(true, animated: false)
+
+        view.addSubview(backButton)
+        view.addSubview(titleLabel)
+        view.addSubview(subtitleLabel)
+        view.addSubview(emailTextField)
+        view.addSubview(emailUnderlineView)
+        view.addSubview(faceDetectionButton)
+
+        NSLayoutConstraint.activate([
+            // Back button
+            backButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            backButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            backButton.widthAnchor.constraint(equalToConstant: 44),
+            backButton.heightAnchor.constraint(equalToConstant: 44),
+
+            // Title
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
+            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+
+            // Subtitle
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
+            subtitleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
+            subtitleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+
+            // Email TextField
+            emailTextField.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 40),
+            emailTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
+            emailTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+            emailTextField.heightAnchor.constraint(equalToConstant: 44),
+
+            // Email underline
+            emailUnderlineView.topAnchor.constraint(equalTo: emailTextField.bottomAnchor, constant: 4),
+            emailUnderlineView.leadingAnchor.constraint(equalTo: emailTextField.leadingAnchor),
+            emailUnderlineView.trailingAnchor.constraint(equalTo: emailTextField.trailingAnchor),
+            emailUnderlineView.heightAnchor.constraint(equalToConstant: 1),
+
+            // Face Detection Button
+            faceDetectionButton.topAnchor.constraint(equalTo: emailUnderlineView.bottomAnchor, constant: 30),
+            faceDetectionButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
+            faceDetectionButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+            faceDetectionButton.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+
+    private func setupActions() {
+        backButton.addTarget(self, action: #selector(onBack), for: .touchUpInside)
+        faceDetectionButton.addTarget(self, action: #selector(onFaceDetection), for: .touchUpInside)
+        emailTextField.addTarget(self, action: #selector(textFieldTextChanged), for: .editingChanged)
+        emailTextField.delegate = self
+    }
+
+    @objc private func onBack() {
+        navigationController?.popViewController(animated: true)
+    }
+
+    @objc func textFieldTextChanged() {
         updateButtonState()
     }
 
     func updateButtonState() {
         if emailTextField.text.isEmailValid() {
-            faceDetectionButton.layer.opacity = 1
+            faceDetectionButton.alpha = 1
             faceDetectionButton.isUserInteractionEnabled = true
         } else {
-            faceDetectionButton.layer.opacity = 0.2
+            faceDetectionButton.alpha = 0.5
             faceDetectionButton.isUserInteractionEnabled = false
         }
     }
 
-    //MARK: - IBActions
-    @IBAction func onFaceDetection(_ sender: UIButton) {
-        self.view.endEditing(true)
+    @objc func onFaceDetection() {
+        view.endEditing(true)
         // Validate email before opening face detection
         let email = emailTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines)
         guard email?.count ?? 0 > 0, emailTextField.text.isEmailValid() else {
@@ -90,7 +197,8 @@ class LoginScreen: UIViewController {
                         print(jsonString)
                     }
                     // Navigate to VerifiedScreen with data
-                    if let vc = STORYBOARD.verifyAccount.instantiateViewController(withIdentifier: "VerifiedScreen") as? VerifiedScreen {
+                    let storyboard = UIStoryboard(name: "VerifyDocument", bundle: Bundle.module)
+                    if let vc = storyboard.instantiateViewController(withIdentifier: "VerifiedScreen") as? VerifiedScreen {
                         vc.verificationData = res
                         self.navigationController?.pushViewController(vc, animated: true)
                     }
@@ -110,10 +218,10 @@ class LoginScreen: UIViewController {
     }
 }
 
-//MARK: - UITextFieldDelegate
+// MARK: - UITextFieldDelegate
 extension LoginScreen: UITextFieldDelegate {
 
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         if string.containsEmoji {
             return false
         }

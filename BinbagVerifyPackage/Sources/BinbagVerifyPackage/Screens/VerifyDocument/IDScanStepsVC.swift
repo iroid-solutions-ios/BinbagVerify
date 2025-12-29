@@ -41,14 +41,14 @@ public final class IDScanStepsVC: UIViewController {
 
     public required init?(coder: NSCoder) { nil }
     
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         title = "ID Validation"
         setupUI()
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
+
+    public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // If user hasn't started yet, highlight first step as enabled
         let hasAnyNonPending = stepStatuses.contains { status in
@@ -376,20 +376,20 @@ public final class IDScanStepsVC: UIViewController {
         let isBack = lower.contains("back")
         switch documentType {
             case .driversLicenseOrIDCard:
-                if isFront { return UIImage(named: "DRIVER LICENSE - FRONT") }
-                if isBack { return UIImage(named: "DRIVER LICENSE - BACK") }
+                if isFront { return UIImage.packageImage(named: "DRIVER LICENSE - FRONT") }
+                if isBack { return UIImage.packageImage(named: "DRIVER LICENSE - BACK") }
             case .passport:
-                if isFront { return UIImage(named: "PASSPORT - FRONT") }
-                if isBack { return UIImage(named: "PASSPORT - BACK") }
+                if isFront { return UIImage.packageImage(named: "PASSPORT - FRONT") }
+                if isBack { return UIImage.packageImage(named: "PASSPORT - BACK") }
             case .passportCard:
-                if isFront { return UIImage(named: "PASSPORT CARD - FRONT") ?? UIImage(named: "PASSPORT - FRONT") }
-                if isBack { return UIImage(named: "PASSPORT CARD - BACK") }
+                if isFront { return UIImage.packageImage(named: "PASSPORT CARD - FRONT") ?? UIImage.packageImage(named: "PASSPORT - FRONT") }
+                if isBack { return UIImage.packageImage(named: "PASSPORT CARD - BACK") }
             case .internationalID:
-                if isFront { return UIImage(named: "ID CARD - FRONT") }
-                if isBack { return UIImage(named: "INTERNATIONAL ID - BACK") }
+                if isFront { return UIImage.packageImage(named: "ID CARD - FRONT") }
+                if isBack { return UIImage.packageImage(named: "INTERNATIONAL ID - BACK") }
         }
-        if lower.contains("face") { return UIImage(named: "ic_face") ?? UIImage(systemName: "person.crop.circle") }
-        return UIImage(named: "drivers-license")
+        if lower.contains("face") { return UIImage.packageImage(named: "ic_face") ?? UIImage(systemName: "person.crop.circle") }
+        return UIImage.packageImage(named: "drivers-license")
     }
     
     private func labeled(_ text: String) -> UILabel {

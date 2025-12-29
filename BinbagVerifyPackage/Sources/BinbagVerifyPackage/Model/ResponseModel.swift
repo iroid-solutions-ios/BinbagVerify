@@ -194,7 +194,7 @@ public struct Document: Codable {
         case documentClass = "class"
     }
 
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.auditInformation = try container.decodeIfPresent(String.self, forKey: .auditInformation)
         self.cardRevisionDate = try container.decodeIfPresent(String.self, forKey: .cardRevisionDate)
@@ -286,7 +286,7 @@ public struct DocumentConfidenceScores: Codable {
         case documentClass = "class"
     }
 
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.auditInformation = try container.decodeIfPresent(Int.self, forKey: .auditInformation)
         self.cardRevisionDate = try container.decodeIfPresent(Int.self, forKey: .cardRevisionDate)

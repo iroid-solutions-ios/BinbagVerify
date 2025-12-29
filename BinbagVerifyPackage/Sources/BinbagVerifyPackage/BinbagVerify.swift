@@ -122,6 +122,71 @@ public final class BinbagVerify {
         return config != nil
     }
 
+    // MARK: - Simple Start Methods (No ViewController Required)
+
+    /// Start full verification flow - automatically finds top view controller
+    /// Usage: BinbagVerify.start { result in ... }
+    public static func start(completion: @escaping (BinbagVerificationResult) -> Void) {
+        shared.startFromTopViewController(type: .fullVerification, completion: completion)
+    }
+
+    /// Start verification with specific type - automatically finds top view controller
+    /// Usage: BinbagVerify.start(type: .documentOnly) { result in ... }
+    public static func start(
+        type: BinbagVerificationType,
+        userEmail: String? = nil,
+        completion: @escaping (BinbagVerificationResult) -> Void
+    ) {
+        shared.startFromTopViewController(type: type, userEmail: userEmail, completion: completion)
+    }
+
+    /// Internal method to start from automatically detected top view controller
+    private func startFromTopViewController(
+        type: BinbagVerificationType,
+        userEmail: String? = nil,
+        completion: @escaping (BinbagVerificationResult) -> Void
+    ) {
+        guard let topVC = Self.getTopViewController() else {
+            completion(BinbagVerificationResult(
+                isVerified: false,
+                documentData: nil,
+                error: .verificationFailed("Unable to present verification screen")
+            ))
+            return
+        }
+
+        startVerification(from: topVC, type: type, userEmail: userEmail, completion: completion)
+    }
+
+    /// Get the top-most view controller in the app
+    private static func getTopViewController() -> UIViewController? {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first(where: { $0.isKeyWindow }),
+              let rootVC = window.rootViewController else {
+            return nil
+        }
+
+        return getTopViewController(from: rootVC)
+    }
+
+    private static func getTopViewController(from viewController: UIViewController) -> UIViewController {
+        if let presented = viewController.presentedViewController {
+            return getTopViewController(from: presented)
+        }
+
+        if let navigationController = viewController as? UINavigationController,
+           let visible = navigationController.visibleViewController {
+            return getTopViewController(from: visible)
+        }
+
+        if let tabBarController = viewController as? UITabBarController,
+           let selected = tabBarController.selectedViewController {
+            return getTopViewController(from: selected)
+        }
+
+        return viewController
+    }
+
     // MARK: - Start Verification (UIKit)
 
     /// Start the verification flow from a UIViewController
@@ -151,29 +216,22 @@ public final class BinbagVerify {
 
         switch type {
         case .fullVerification:
-            // Start with SignUp screen
-            if let vc = getStoryboard().instantiateViewController(withIdentifier: "SignUpScreen") as? SignUpScreen {
-                viewController = vc
-            } else {
-                viewController = createDocumentTypeVC()
-            }
+            // Start with Introduction Video screen
+            viewController = IntroductionVideoScreen()
 
         case .documentOnly:
             // Start with document type selection
             viewController = createDocumentTypeVC()
 
         case .reverification:
-            // Start with login/reverification screen
-            if let vc = getStoryboard().instantiateViewController(withIdentifier: "LoginScreen") as? LoginScreen {
-                if let email = userEmail {
-                    // Pre-fill email if provided
-                    vc.loadViewIfNeeded()
-                    vc.emailTextField?.text = email
-                }
-                viewController = vc
-            } else {
-                viewController = createFaceOnlyCaptureVC()
+            // Start with login/reverification screen (programmatic)
+            let vc = LoginScreen()
+            if let email = userEmail {
+                // Pre-fill email if provided
+                vc.loadViewIfNeeded()
+                vc.emailTextField.text = email
             }
+            viewController = vc
         }
 
         let navigationController = UINavigationController(rootViewController: viewController)
@@ -192,14 +250,15 @@ public final class BinbagVerify {
     // MARK: - Helper Methods
 
     private func getStoryboard() -> UIStoryboard {
-        return UIStoryboard(name: "VerifyAccount", bundle: Bundle.module)
+        return UIStoryboard(name: "VerifyDocument", bundle: Bundle.module)
+    }
+
+    private func getAuthStoryboard() -> UIStoryboard {
+        return UIStoryboard(name: "Authentication", bundle: Bundle.module)
     }
 
     private func createDocumentTypeVC() -> UIViewController {
-        if let vc = getStoryboard().instantiateViewController(withIdentifier: "IDScanDocumentTypeVC") as? IDScanDocumentTypeVC {
-            return vc
-        }
-        // Fallback: create programmatically
+        // IDScanDocumentTypeVC is created programmatically (not in storyboard)
         return IDScanDocumentTypeVC()
     }
 

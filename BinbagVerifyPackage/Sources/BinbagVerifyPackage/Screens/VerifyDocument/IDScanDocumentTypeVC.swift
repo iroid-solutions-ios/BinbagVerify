@@ -15,7 +15,7 @@ public final class IDScanDocumentTypeVC: UIViewController, UITableViewDataSource
     private let backButton = UIButton(type: .system)
     private let cancelButton = UIButton(type: .system)
     
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         setupHeader()
@@ -83,21 +83,19 @@ public final class IDScanDocumentTypeVC: UIViewController, UITableViewDataSource
     }
     
     // MARK: - UITableViewDataSource
-    func numberOfSections(in tableView: UITableView) -> Int { 1 }
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { types.count }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    public func numberOfSections(in tableView: UITableView) -> Int { 1 }
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { types.count }
+
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         let type = types[indexPath.row]
-        var content = cell.defaultContentConfiguration()
-        content.text = type.title
-        cell.contentConfiguration = content
+        cell.textLabel?.text = type.title
         cell.accessoryType = .disclosureIndicator
         return cell
     }
     
     // MARK: - UITableViewDelegate
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let selected = types[indexPath.row]
         let stepsVC = IDScanStepsVC(documentType: selected)

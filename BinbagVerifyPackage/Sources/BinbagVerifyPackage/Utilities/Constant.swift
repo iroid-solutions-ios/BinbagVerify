@@ -34,7 +34,8 @@ struct STORYBOARD {
 let isAppInTestMode                      = true // true or false
 let APPLICATION_NAME                     = "BinbagVerify"
 let DEVICE_UNIQUE_IDETIFICATION : String = UIDevice.current.identifierForVendor!.uuidString
-let appDelegate                          = UIApplication.shared.delegate as! AppDelegate
+// Note: AppDelegate reference removed - package should not depend on main app types
+// Access AppDelegate from the host app if needed
 let userDefaults                         = UserDefaults.standard
 
 

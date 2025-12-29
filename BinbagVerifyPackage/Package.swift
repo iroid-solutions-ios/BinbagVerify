@@ -17,8 +17,8 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.9.0"),
         .package(url: "https://github.com/kizitonwose/CountryPickerView.git", from: "3.3.0"),
-        .package(url: "https://github.com/hackiftekhar/IQKeyboardManager.git", from: "7.0.0"),
-        .package(url: "https://github.com/Daltron/NotificationBanner.git", from: "3.2.0"),
+        .package(url: "https://github.com/hackiftekhar/IQKeyboardManager.git", from: "8.0.1"),
+        .package(url: "https://github.com/Daltron/NotificationBanner.git", from: "4.0.0"),
         .package(url: "https://github.com/SDWebImage/SDWebImage.git", from: "5.18.0"),
         .package(url: "https://github.com/SnapKit/SnapKit.git", from: "5.7.0"),
     ],

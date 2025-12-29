@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ContractScreen: UIViewController {
+public class ContractScreen: UIViewController {
 
     //MARK: - IBOutlets
     @IBOutlet weak var contractBackgroundView: UIView!
@@ -25,12 +25,12 @@ class ContractScreen: UIViewController {
     var datePicker = UIDatePicker()
     var toolBar = UIToolbar()
     
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         initialSetup()
     }
-    
-    override func viewWillLayoutSubviews() {
+
+    public override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         contractBackgroundView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         contractBackgroundView.layer.cornerRadius = 16
@@ -63,7 +63,7 @@ class ContractScreen: UIViewController {
 
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonTapped))
         let cancelButton = UIBarButtonItem(title: Utility.getLocalizedString(value: "CANCEL"), style: .plain, target: self, action: #selector(cancelClick))
-        toolBar.setItems([cancelButton, .flexibleSpace(), doneButton], animated: true)
+        toolBar.setItems([cancelButton, UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil), doneButton], animated: true)
 
         birthDateTextField.inputAccessoryView = toolBar
     }
@@ -185,8 +185,8 @@ extension ContractScreen {
 
 //MARK: - UITextFieldDelegate
 extension ContractScreen: UITextFieldDelegate {
-    
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+
+    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         
         if string.containsEmoji {
             return false

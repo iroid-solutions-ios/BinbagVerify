@@ -484,7 +484,7 @@
         <!--Contract Screen-->
         <scene sceneID="cQh-vq-0xN">
             <objects>
-                <viewController storyboardIdentifier="ContractScreen" id="0nW-eh-mEA" customClass="ContractScreen" customModule="BinbagVerify" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ContractScreen" id="0nW-eh-mEA" customClass="ContractScreen" customModule="BinbagVerifyPackage" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="GhN-3k-aYy">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
