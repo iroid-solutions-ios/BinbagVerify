@@ -188,6 +188,129 @@ public struct BinbagVerifyButton: View {
     }
 }
 
+// MARK: - Observable Verification Manager (For Simple SwiftUI Integration)
+@available(iOS 14.0, *)
+public class BinbagVerifyManager: ObservableObject {
+    public static let shared = BinbagVerifyManager()
+
+    @Published public var isPresented: Bool = false
+    @Published public var lastResult: BinbagVerificationResult?
+
+    public var verificationType: BinbagVerificationType = .fullVerification
+    public var userEmail: String?
+
+    private var completionHandler: ((BinbagVerificationResult) -> Void)?
+
+    private init() {}
+
+    /// Start verification - call this from anywhere in SwiftUI
+    /// Usage: BinbagVerifyManager.shared.start { result in ... }
+    public func start(
+        type: BinbagVerificationType = .fullVerification,
+        userEmail: String? = nil,
+        completion: @escaping (BinbagVerificationResult) -> Void
+    ) {
+        self.verificationType = type
+        self.userEmail = userEmail
+        self.completionHandler = completion
+        self.isPresented = true
+    }
+
+    /// Called when verification completes
+    internal func complete(with result: BinbagVerificationResult) {
+        self.lastResult = result
+        self.isPresented = false
+        self.completionHandler?(result)
+        self.completionHandler = nil
+    }
+}
+
+// MARK: - Auto-Presenting View Modifier (Attach Once to Root View)
+@available(iOS 14.0, *)
+public struct BinbagVerifyAutoPresenter: ViewModifier {
+    @ObservedObject private var manager = BinbagVerifyManager.shared
+
+    public func body(content: Content) -> some View {
+        content
+            .fullScreenCover(isPresented: $manager.isPresented) {
+                BinbagVerifyView(
+                    verificationType: manager.verificationType,
+                    userEmail: manager.userEmail,
+                    onResult: { result in
+                        manager.complete(with: result)
+                    },
+                    onDismiss: {
+                        manager.complete(with: BinbagVerificationResult(
+                            isVerified: false,
+                            documentData: nil,
+                            error: .userCancelled
+                        ))
+                    }
+                )
+                .ignoresSafeArea()
+            }
+    }
+}
+
+// MARK: - Simple View Extension
+@available(iOS 14.0, *)
+public extension View {
+
+    /// Attach this modifier ONCE to your root view to enable BinbagVerifyManager.shared.start()
+    /// Usage:
+    /// ```
+    /// @main
+    /// struct MyApp: App {
+    ///     init() {
+    ///         BinbagVerify.configure(with: BinbagVerifyConfig(apiKey: "YOUR_KEY"))
+    ///     }
+    ///     var body: some Scene {
+    ///         WindowGroup {
+    ///             ContentView()
+    ///                 .binbagVerifyEnabled()  // Add this once
+    ///         }
+    ///     }
+    /// }
+    /// ```
+    /// Then from anywhere: BinbagVerifyManager.shared.start { result in ... }
+    func binbagVerifyEnabled() -> some View {
+        modifier(BinbagVerifyAutoPresenter())
+    }
+}
+
+// MARK: - Complete SwiftUI App Example View
+@available(iOS 14.0, *)
+public struct BinbagVerifyExampleView: View {
+    @State private var verificationStatus: String = "Not verified"
+
+    public init() {}
+
+    public var body: some View {
+        VStack(spacing: 20) {
+            Text("BinbagVerify SDK")
+                .font(.title)
+
+            Text(verificationStatus)
+                .foregroundColor(.gray)
+
+            Button("Start Verification") {
+                BinbagVerifyManager.shared.start { result in
+                    if result.isVerified {
+                        verificationStatus = "Verified ✓"
+                    } else if let error = result.error {
+                        verificationStatus = "Error: \(error.localizedDescription)"
+                    }
+                }
+            }
+            .padding()
+            .background(Color.green)
+            .foregroundColor(.white)
+            .cornerRadius(10)
+        }
+        .binbagVerifyEnabled() // Enable auto-presentation
+    }
+}
+
 // MARK: - Preview Provider
 #if DEBUG
 @available(iOS 14.0, *)
