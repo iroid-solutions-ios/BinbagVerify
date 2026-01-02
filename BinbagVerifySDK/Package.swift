@@ -33,8 +33,8 @@ let package = Package(
         // ============================================================
         // .binaryTarget(
         //     name: "BinbagVerifyPackage",
-        //     url: "https://github.com/YOUR_ORG/BinbagVerifySDK/releases/download/v1.0.0/BinbagVerifyPackage.xcframework.zip",
-        //     checksum: "YOUR_CHECKSUM_HERE"  // Run: swift package compute-checksum BinbagVerifyPackage.xcframework.zip
+        //     url: "https://github.com/iroid-solutions-ios/Binbag-ios/releases/download/1.0.1/BinbagVerifyPackage.xcframework.zip",
+        //     checksum: "5e7e22d4151f07e1147d0d6082682e145915bcf9339e634442740006eacc3fee"
         // ),
 
         // Wrapper to include Alamofire dependency
