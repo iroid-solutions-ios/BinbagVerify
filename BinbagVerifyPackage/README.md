@@ -10,14 +10,14 @@ Add the following to your `Package.swift` dependencies:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/YourOrg/BinbagVerifyPackage.git", from: "1.0.0")
+    .package(url: "https://github.com/iroid-solutions-ios/BinbagVerify.git", from: "1.0.1")
 ]
 ```
 
 Or in Xcode:
 1. Go to **File > Add Packages...**
-2. Enter the repository URL
-3. Select version and add to your project
+2. Enter: `https://github.com/iroid-solutions-ios/BinbagVerify.git`
+3. Select version `1.0.1` and add to your project
 
 ## Setup
 

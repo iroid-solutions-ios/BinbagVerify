@@ -7,8 +7,8 @@ Identity verification SDK for iOS apps. **Source code is hidden** - distributed 
 ### Option 1: From GitHub URL (Recommended)
 
 1. In Xcode, go to **File → Add Package Dependencies**
-2. Enter: `https://github.com/YOUR_ORG/BinbagVerifySDK`
-3. Select **BinbagVerifyPackage** library
+2. Enter: `https://github.com/iroid-solutions-ios/BinbagVerify.git`
+3. Select version `1.0.1` and **BinbagVerifyPackage** library
 
 ### Option 2: Local Package
 
