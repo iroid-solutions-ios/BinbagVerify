@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import IQKeyboardManagerSwift
 import BinbagVerifyPackage
 
 
@@ -18,11 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
-        IQKeyboardManager.shared.isEnabled = true
-        IQKeyboardManager.shared.resignOnTouchOutside = true
-
-        // Configure BinbagVerify SDK
+        // Configure BinbagVerify SDK with API key
         BinbagVerify.configure(with: BinbagVerifyConfig(
             apiKey: "YOUR_API_KEY",
             environment: .development

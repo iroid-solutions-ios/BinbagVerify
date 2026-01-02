@@ -82,9 +82,8 @@ public enum BinbagVerifyError: Error, LocalizedError {
 
 // MARK: - Verification Flow Type
 public enum BinbagVerificationType {
-    case fullVerification      // Sign up + Document + Face
-    case documentOnly          // Document + Face only
-    case reverification        // Face only (for existing users)
+    case documentScan          // Document + Face verification
+    case faceDetection         // Face only verification (for reverification)
 }
 
 // MARK: - Delegate Protocol
@@ -103,18 +102,26 @@ public final class BinbagVerify {
     private var config: BinbagVerifyConfig?
     public weak var delegate: BinbagVerifyDelegate?
 
-    private var completionHandler: ((BinbagVerificationResult) -> Void)?
+    /// Current email for the ongoing verification (set when starting verification)
+    internal var currentEmail: String?
+
+    internal var completionHandler: ((BinbagVerificationResult) -> Void)?
 
     private init() {}
 
     // MARK: - Configuration
 
-    /// Configure the SDK with your API key and settings
+    /// Configure the SDK with your API key, email and settings
     /// Call this in your AppDelegate or App init
     public static func configure(with config: BinbagVerifyConfig) {
         shared.config = config
-        // Set the base URL based on environment
-        // Update WebServicesUrls if needed
+        // Update APIManager with config
+        APIManager.shared.updateConfig(apiKey: config.apiKey, baseURL: config.environment.baseURL)
+    }
+
+    /// Get current configuration
+    public var currentConfig: BinbagVerifyConfig? {
+        return config
     }
 
     /// Check if SDK is configured
@@ -124,26 +131,44 @@ public final class BinbagVerify {
 
     // MARK: - Simple Start Methods (No ViewController Required)
 
-    /// Start full verification flow - automatically finds top view controller
-    /// Usage: BinbagVerify.start { result in ... }
-    public static func start(completion: @escaping (BinbagVerificationResult) -> Void) {
-        shared.startFromTopViewController(type: .fullVerification, completion: completion)
+    /// Start document scan flow - automatically finds top view controller
+    /// Usage: BinbagVerify.startDocumentScan(email: "user@example.com") { result in ... }
+    /// - Parameters:
+    ///   - email: User's email address for verification (required for faceDetection, optional for documentScan)
+    ///   - completion: Completion handler with the result
+    public static func startDocumentScan(
+        email: String? = nil,
+        completion: @escaping (BinbagVerificationResult) -> Void
+    ) {
+        shared.startFromTopViewController(type: .documentScan, email: email, completion: completion)
+    }
+
+    /// Start face detection flow - automatically finds top view controller
+    /// Usage: BinbagVerify.startFaceDetection(email: "user@example.com") { result in ... }
+    /// - Parameters:
+    ///   - email: User's email address for reverification (required)
+    ///   - completion: Completion handler with the result
+    public static func startFaceDetection(
+        email: String,
+        completion: @escaping (BinbagVerificationResult) -> Void
+    ) {
+        shared.startFromTopViewController(type: .faceDetection, email: email, completion: completion)
     }
 
     /// Start verification with specific type - automatically finds top view controller
-    /// Usage: BinbagVerify.start(type: .documentOnly) { result in ... }
+    /// Usage: BinbagVerify.start(type: .documentScan, email: "user@example.com") { result in ... }
     public static func start(
         type: BinbagVerificationType,
-        userEmail: String? = nil,
+        email: String? = nil,
         completion: @escaping (BinbagVerificationResult) -> Void
     ) {
-        shared.startFromTopViewController(type: type, userEmail: userEmail, completion: completion)
+        shared.startFromTopViewController(type: type, email: email, completion: completion)
     }
 
     /// Internal method to start from automatically detected top view controller
     private func startFromTopViewController(
         type: BinbagVerificationType,
-        userEmail: String? = nil,
+        email: String?,
         completion: @escaping (BinbagVerificationResult) -> Void
     ) {
         guard let topVC = Self.getTopViewController() else {
@@ -155,7 +180,7 @@ public final class BinbagVerify {
             return
         }
 
-        startVerification(from: topVC, type: type, userEmail: userEmail, completion: completion)
+        startVerification(from: topVC, type: type, email: email, completion: completion)
     }
 
     /// Get the top-most view controller in the app
@@ -192,13 +217,13 @@ public final class BinbagVerify {
     /// Start the verification flow from a UIViewController
     /// - Parameters:
     ///   - presentingViewController: The view controller to present from
-    ///   - type: The type of verification flow
-    ///   - userEmail: Optional email for reverification
+    ///   - type: The type of verification flow (.documentScan or .faceDetection)
+    ///   - email: User's email address (required for faceDetection)
     ///   - completion: Completion handler with the result
     public func startVerification(
         from presentingViewController: UIViewController,
-        type: BinbagVerificationType = .fullVerification,
-        userEmail: String? = nil,
+        type: BinbagVerificationType = .documentScan,
+        email: String? = nil,
         completion: @escaping (BinbagVerificationResult) -> Void
     ) {
         guard config != nil else {
@@ -210,28 +235,20 @@ public final class BinbagVerify {
             return
         }
 
+        // Store email for this verification session
+        self.currentEmail = email
         self.completionHandler = completion
 
         let viewController: UIViewController
 
         switch type {
-        case .fullVerification:
-            // Start with Introduction Video screen
-            viewController = IntroductionVideoScreen()
+        case .documentScan:
+            // Start with IDScanStepsVC directly
+            viewController = createDocumentScanVC()
 
-        case .documentOnly:
-            // Start with document type selection
-            viewController = createDocumentTypeVC()
-
-        case .reverification:
-            // Start with login/reverification screen (programmatic)
-            let vc = LoginScreen()
-            if let email = userEmail {
-                // Pre-fill email if provided
-                vc.loadViewIfNeeded()
-                vc.emailTextField.text = email
-            }
-            viewController = vc
+        case .faceDetection:
+            // Start with face capture only
+            viewController = createFaceOnlyCaptureVC()
         }
 
         let navigationController = UINavigationController(rootViewController: viewController)
@@ -257,15 +274,69 @@ public final class BinbagVerify {
         return UIStoryboard(name: "Authentication", bundle: Bundle.module)
     }
 
-    private func createDocumentTypeVC() -> UIViewController {
-        // IDScanDocumentTypeVC is created programmatically (not in storyboard)
-        return IDScanDocumentTypeVC()
+    private func createDocumentScanVC() -> UIViewController {
+        // Directly open IDScanStepsVC with default document type (Driver's License)
+        return IDScanStepsVC(documentType: .driversLicenseOrIDCard)
     }
 
     private func createFaceOnlyCaptureVC() -> UIViewController {
         let faceStep = IDScanStep(title: "Face")
         let captureVC = IDCaptureVC(documentType: .driversLicenseOrIDCard, stepIndex: 0, step: faceStep)
         captureVC.isFaceOnlyMode = true
+
+        // Set up face capture completion handler
+        captureVC.onCaptured = { [weak self, weak captureVC] image in
+            guard let self = self, let vc = captureVC else { return }
+
+            // Call reverify API with face image
+            guard let email = self.currentEmail, !email.isEmpty else {
+                self.failVerification(with: .verificationFailed("Email is required for face detection"))
+                return
+            }
+
+            guard let imageData = image?.jpegData(compressionQuality: 0.5) else {
+                self.failVerification(with: .verificationFailed("Failed to capture face image"))
+                return
+            }
+
+            Utility.showIndicator()
+            AuthServices.shared.reverify(email: email, age: "0", livePhotoData: imageData) { [weak self] statusCode, response in
+                Utility.hideIndicator()
+
+                DispatchQueue.main.async {
+                    // Dismiss the screen first
+                    vc.navigationController?.dismiss(animated: true) {
+                        if (200..<300).contains(statusCode), let data = response.documentVerificationData {
+                            // Success - call completion with result
+                            self?.completionHandler?(BinbagVerificationResult(
+                                isVerified: true,
+                                documentData: data,
+                                error: nil
+                            ))
+                        } else {
+                            // Failed - call completion with error
+                            self?.completionHandler?(BinbagVerificationResult(
+                                isVerified: false,
+                                documentData: response.documentVerificationData,
+                                error: .verificationFailed(response.message ?? "Verification failed")
+                            ))
+                        }
+                    }
+                }
+            } failure: { [weak self] error in
+                Utility.hideIndicator()
+                DispatchQueue.main.async {
+                    vc.navigationController?.dismiss(animated: true) {
+                        self?.completionHandler?(BinbagVerificationResult(
+                            isVerified: false,
+                            documentData: nil,
+                            error: .verificationFailed(error)
+                        ))
+                    }
+                }
+            }
+        }
+
         return captureVC
     }
 
@@ -319,16 +390,52 @@ public final class BinbagVerify {
 // MARK: - Convenience Extension for UIViewController
 public extension UIViewController {
 
+    /// Present BinbagVerify document scan flow
+    /// - Parameters:
+    ///   - email: User's email address (optional for document scan)
+    ///   - completion: Completion handler with the result
+    func presentBinbagDocumentScan(
+        email: String? = nil,
+        completion: @escaping (BinbagVerificationResult) -> Void
+    ) {
+        BinbagVerify.shared.startVerification(
+            from: self,
+            type: .documentScan,
+            email: email,
+            completion: completion
+        )
+    }
+
+    /// Present BinbagVerify face detection flow
+    /// - Parameters:
+    ///   - email: User's email address (required for face detection/reverification)
+    ///   - completion: Completion handler with the result
+    func presentBinbagFaceDetection(
+        email: String,
+        completion: @escaping (BinbagVerificationResult) -> Void
+    ) {
+        BinbagVerify.shared.startVerification(
+            from: self,
+            type: .faceDetection,
+            email: email,
+            completion: completion
+        )
+    }
+
     /// Present BinbagVerify verification flow
+    /// - Parameters:
+    ///   - type: The type of verification flow
+    ///   - email: User's email address (required for faceDetection)
+    ///   - completion: Completion handler with the result
     func presentBinbagVerification(
-        type: BinbagVerificationType = .fullVerification,
-        userEmail: String? = nil,
+        type: BinbagVerificationType = .documentScan,
+        email: String? = nil,
         completion: @escaping (BinbagVerificationResult) -> Void
     ) {
         BinbagVerify.shared.startVerification(
             from: self,
             type: type,
-            userEmail: userEmail,
+            email: email,
             completion: completion
         )
     }

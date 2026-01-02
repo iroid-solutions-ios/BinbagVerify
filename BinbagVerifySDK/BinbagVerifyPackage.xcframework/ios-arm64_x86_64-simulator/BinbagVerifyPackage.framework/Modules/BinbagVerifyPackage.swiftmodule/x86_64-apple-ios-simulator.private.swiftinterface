@@ -1,0 +1,555 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 6.0.3 effective-5.10 (swiftlang-6.0.3.1.10 clang-1600.0.30.1)
+// swift-module-flags: -target x86_64-apple-ios13.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name BinbagVerifyPackage -package-name binbagverifypackage
+// swift-module-flags-ignorable: -no-verify-emitted-module-interface
+import AVFoundation
+import Alamofire
+import Combine
+import CoreGraphics
+import CoreImage
+import CoreMotion
+import DeveloperToolsSupport
+import Foundation
+import Foundation/*.Bundle*/
+import Foundation/*.ProcessInfo*/
+import Foundation/*.URL*/
+import MediaPlayer
+import MobileCoreServices
+import Network
+import Photos
+import QuartzCore
+import Swift
+import SwiftUI
+import SystemConfiguration
+import UIKit
+import Vision
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+public struct BinbagVerifyConfig {
+  public let apiKey: Swift.String
+  public let email: Swift.String
+  public let environment: BinbagVerifyPackage.BinbagEnvironment
+  public let primaryColor: UIKit.UIColor
+  public init(apiKey: Swift.String, email: Swift.String, environment: BinbagVerifyPackage.BinbagEnvironment = .production, primaryColor: UIKit.UIColor = .systemBlue)
+}
+public enum BinbagEnvironment {
+  case development
+  case staging
+  case production
+  public static func == (a: BinbagVerifyPackage.BinbagEnvironment, b: BinbagVerifyPackage.BinbagEnvironment) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public struct BinbagVerificationResult {
+  public let isVerified: Swift.Bool
+  public let documentData: BinbagVerifyPackage.DocumentVerificationData?
+  public let error: BinbagVerifyPackage.BinbagVerifyError?
+  public init(isVerified: Swift.Bool, documentData: BinbagVerifyPackage.DocumentVerificationData?, error: BinbagVerifyPackage.BinbagVerifyError?)
+}
+public enum BinbagVerifyError : Swift.Error, Foundation.LocalizedError {
+  case notConfigured
+  case userCancelled
+  case verificationFailed(Swift.String)
+  case networkError(Swift.String)
+  case cameraAccessDenied
+  case invalidDocument
+  public var errorDescription: Swift.String? {
+    get
+  }
+}
+public enum BinbagVerificationType {
+  case documentScan
+  case faceDetection
+  public static func == (a: BinbagVerifyPackage.BinbagVerificationType, b: BinbagVerifyPackage.BinbagVerificationType) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public protocol BinbagVerifyDelegate : AnyObject {
+  func binbagVerifyDidComplete(result: BinbagVerifyPackage.BinbagVerificationResult)
+  func binbagVerifyDidCancel()
+}
+@_hasMissingDesignatedInitializers final public class BinbagVerify {
+  public static let shared: BinbagVerifyPackage.BinbagVerify
+  weak final public var delegate: (any BinbagVerifyPackage.BinbagVerifyDelegate)?
+  public static func configure(with config: BinbagVerifyPackage.BinbagVerifyConfig)
+  final public var currentConfig: BinbagVerifyPackage.BinbagVerifyConfig? {
+    get
+  }
+  final public var isConfigured: Swift.Bool {
+    get
+  }
+  public static func startDocumentScan(completion: @escaping (BinbagVerifyPackage.BinbagVerificationResult) -> Swift.Void)
+  public static func startFaceDetection(completion: @escaping (BinbagVerifyPackage.BinbagVerificationResult) -> Swift.Void)
+  public static func start(type: BinbagVerifyPackage.BinbagVerificationType, completion: @escaping (BinbagVerifyPackage.BinbagVerificationResult) -> Swift.Void)
+  final public func startVerification(from presentingViewController: UIKit.UIViewController, type: BinbagVerifyPackage.BinbagVerificationType = .documentScan, completion: @escaping (BinbagVerifyPackage.BinbagVerificationResult) -> Swift.Void)
+  @objc deinit
+}
+extension UIKit.UIViewController {
+  @_Concurrency.MainActor @preconcurrency public func presentBinbagDocumentScan(completion: @escaping (BinbagVerifyPackage.BinbagVerificationResult) -> Swift.Void)
+  @_Concurrency.MainActor @preconcurrency public func presentBinbagFaceDetection(completion: @escaping (BinbagVerifyPackage.BinbagVerificationResult) -> Swift.Void)
+  @_Concurrency.MainActor @preconcurrency public func presentBinbagVerification(type: BinbagVerifyPackage.BinbagVerificationType = .documentScan, completion: @escaping (BinbagVerifyPackage.BinbagVerificationResult) -> Swift.Void)
+}
+@available(iOS 14.0, *)
+@_Concurrency.MainActor @preconcurrency public struct BinbagVerifyModifier : SwiftUICore.ViewModifier {
+  @_Concurrency.MainActor @preconcurrency public func body(content: BinbagVerifyPackage.BinbagVerifyModifier.Content) -> some SwiftUICore.View
+  
+  @available(iOS 14.0, *)
+  public typealias Body = @_opaqueReturnTypeOf("$s19BinbagVerifyPackage0aB8ModifierV4body7contentQr7SwiftUI05_ViewD8_ContentVyACG_tF", 0) __
+}
+@available(iOS 14.0, *)
+extension SwiftUICore.View {
+  @_Concurrency.MainActor @preconcurrency public func binbagDocumentScan(isPresented: SwiftUICore.Binding<Swift.Bool>, onResult: @escaping (BinbagVerifyPackage.BinbagVerificationResult) -> Swift.Void) -> some SwiftUICore.View
+  
+  @_Concurrency.MainActor @preconcurrency public func binbagFaceDetection(isPresented: SwiftUICore.Binding<Swift.Bool>, onResult: @escaping (BinbagVerifyPackage.BinbagVerificationResult) -> Swift.Void) -> some SwiftUICore.View
+  
+  @_Concurrency.MainActor @preconcurrency public func binbagVerify(isPresented: SwiftUICore.Binding<Swift.Bool>, type: BinbagVerifyPackage.BinbagVerificationType = .documentScan, onResult: @escaping (BinbagVerifyPackage.BinbagVerificationResult) -> Swift.Void) -> some SwiftUICore.View
+  
+}
+@available(iOS 14.0, *)
+@_Concurrency.MainActor @preconcurrency public struct BinbagVerifyView : SwiftUI.UIViewControllerRepresentable {
+  @_Concurrency.MainActor @preconcurrency public init(verificationType: BinbagVerifyPackage.BinbagVerificationType = .documentScan, onResult: @escaping (BinbagVerifyPackage.BinbagVerificationResult) -> Swift.Void, onDismiss: @escaping () -> Swift.Void = {})
+  @_Concurrency.MainActor @preconcurrency public func makeUIViewController(context: BinbagVerifyPackage.BinbagVerifyView.Context) -> UIKit.UINavigationController
+  @_Concurrency.MainActor @preconcurrency public func updateUIViewController(_ uiViewController: UIKit.UINavigationController, context: BinbagVerifyPackage.BinbagVerifyView.Context)
+  @_Concurrency.MainActor @preconcurrency public func makeCoordinator() -> BinbagVerifyPackage.BinbagVerifyView.Coordinator
+  @objc @_hasMissingDesignatedInitializers public class Coordinator : ObjectiveC.NSObject {
+    @objc deinit
+  }
+  @available(iOS 14.0, *)
+  public typealias Body = Swift.Never
+  @available(iOS 14.0, *)
+  public typealias UIViewControllerType = UIKit.UINavigationController
+}
+@available(iOS 14.0, *)
+@_Concurrency.MainActor @preconcurrency public struct BinbagVerifyButton : SwiftUICore.View {
+  @_Concurrency.MainActor @preconcurrency public init(title: Swift.String = "Verify Identity", verificationType: BinbagVerifyPackage.BinbagVerificationType = .documentScan, onResult: @escaping (BinbagVerifyPackage.BinbagVerificationResult) -> Swift.Void)
+  @_Concurrency.MainActor @preconcurrency public var body: some SwiftUICore.View {
+    get
+  }
+  @available(iOS 14.0, *)
+  public typealias Body = @_opaqueReturnTypeOf("$s19BinbagVerifyPackage0aB6ButtonV4bodyQrvp", 0) __
+}
+@_hasMissingDesignatedInitializers @available(iOS 14.0, *)
+public class BinbagVerifyManager : Foundation.ObservableObject {
+  public static let shared: BinbagVerifyPackage.BinbagVerifyManager
+  @Combine.Published @_projectedValueProperty($isPresented) public var isPresented: Swift.Bool {
+    get
+    @available(iOS 14.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+    set
+    @available(iOS 14.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+    _modify
+  }
+  public var $isPresented: Combine.Published<Swift.Bool>.Publisher {
+    get
+    @available(iOS 14.0, tvOS 14.0, watchOS 7.0, macOS 11.0, *)
+    set
+  }
+  @Combine.Published @_projectedValueProperty($lastResult) public var lastResult: BinbagVerifyPackage.BinbagVerificationResult? {
+    get
+    @available(iOS 14.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+    set
+    @available(iOS 14.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+    _modify
+  }
+  public var $lastResult: Combine.Published<BinbagVerifyPackage.BinbagVerificationResult?>.Publisher {
+    get
+    @available(iOS 14.0, tvOS 14.0, watchOS 7.0, macOS 11.0, *)
+    set
+  }
+  public var verificationType: BinbagVerifyPackage.BinbagVerificationType
+  public func startDocumentScan(completion: @escaping (BinbagVerifyPackage.BinbagVerificationResult) -> Swift.Void)
+  public func startFaceDetection(completion: @escaping (BinbagVerifyPackage.BinbagVerificationResult) -> Swift.Void)
+  public func start(type: BinbagVerifyPackage.BinbagVerificationType = .documentScan, completion: @escaping (BinbagVerifyPackage.BinbagVerificationResult) -> Swift.Void)
+  @available(iOS 14.0, *)
+  public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
+  @objc deinit
+}
+@available(iOS 14.0, *)
+@_Concurrency.MainActor @preconcurrency public struct BinbagVerifyAutoPresenter : SwiftUICore.ViewModifier {
+  @_Concurrency.MainActor @preconcurrency public func body(content: BinbagVerifyPackage.BinbagVerifyAutoPresenter.Content) -> some SwiftUICore.View
+  
+  @available(iOS 14.0, *)
+  public typealias Body = @_opaqueReturnTypeOf("$s19BinbagVerifyPackage0aB13AutoPresenterV4body7contentQr7SwiftUI21_ViewModifier_ContentVyACG_tF", 0) __
+}
+@available(iOS 14.0, *)
+extension SwiftUICore.View {
+  @_Concurrency.MainActor @preconcurrency public func binbagVerifyEnabled() -> some SwiftUICore.View
+  
+}
+@available(iOS 14.0, *)
+@_Concurrency.MainActor @preconcurrency public struct BinbagVerifyExampleView : SwiftUICore.View {
+  @_Concurrency.MainActor @preconcurrency public init()
+  @_Concurrency.MainActor @preconcurrency public var body: some SwiftUICore.View {
+    get
+  }
+  @available(iOS 14.0, *)
+  public typealias Body = @_opaqueReturnTypeOf("$s19BinbagVerifyPackage0aB11ExampleViewV4bodyQrvp", 0) __
+}
+public enum VideoQuality {
+  case very_high
+  case high
+  case medium
+  case low
+  case very_low
+  public static func == (a: BinbagVerifyPackage.VideoQuality, b: BinbagVerifyPackage.VideoQuality) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public enum CompressionResult {
+  case onStart
+  case onSuccess(Foundation.URL)
+  case onFailure(BinbagVerifyPackage.CompressionError)
+  case onCancelled
+}
+public class Compression {
+  public init()
+  public var cancel: Swift.Bool
+  @objc deinit
+}
+public struct CompressionError : Foundation.LocalizedError {
+  public let title: Swift.String
+}
+@available(iOS 11.0, *)
+public struct LightCompressor {
+  public init()
+  public func compressVideo(source: Foundation.URL, destination: Foundation.URL, quality: BinbagVerifyPackage.VideoQuality, isMinBitRateEnabled: Swift.Bool = true, keepOriginalResolution: Swift.Bool = false, progressQueue: Dispatch.DispatchQueue, progressHandler: ((Foundation.Progress) -> ())?, completion: @escaping (BinbagVerifyPackage.CompressionResult) -> ()) -> BinbagVerifyPackage.Compression
+}
+public enum ReachabilityError : Swift.Error {
+  case failedToCreateWithAddress(Darwin.sockaddr, Swift.Int32)
+  case failedToCreateWithHostname(Swift.String, Swift.Int32)
+  case unableToSetCallback(Swift.Int32)
+  case unableToSetDispatchQueue(Swift.Int32)
+  case unableToGetFlags(Swift.Int32)
+}
+@available(*, unavailable, renamed: "Notification.Name.reachabilityChanged")
+public let ReachabilityChangedNotification: Foundation.NSNotification.Name
+extension Foundation.NSNotification.Name {
+  public static let reachabilityChanged: Foundation.Notification.Name
+}
+public class Reachability {
+  public typealias NetworkReachable = (BinbagVerifyPackage.Reachability) -> ()
+  public typealias NetworkUnreachable = (BinbagVerifyPackage.Reachability) -> ()
+  @available(*, unavailable, renamed: "Connection")
+  public enum NetworkStatus : Swift.CustomStringConvertible {
+    case notReachable, reachableViaWiFi, reachableViaWWAN
+    public var description: Swift.String {
+      get
+    }
+    public static func == (a: BinbagVerifyPackage.Reachability.NetworkStatus, b: BinbagVerifyPackage.Reachability.NetworkStatus) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  public enum Connection : Swift.CustomStringConvertible {
+    case unavailable, wifi, cellular
+    public var description: Swift.String {
+      get
+    }
+    @available(*, deprecated, renamed: "unavailable")
+    public static let none: BinbagVerifyPackage.Reachability.Connection
+    public static func == (a: BinbagVerifyPackage.Reachability.Connection, b: BinbagVerifyPackage.Reachability.Connection) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  public var whenReachable: BinbagVerifyPackage.Reachability.NetworkReachable?
+  public var whenUnreachable: BinbagVerifyPackage.Reachability.NetworkUnreachable?
+  @available(*, deprecated, renamed: "allowsCellularConnection")
+  final public let reachableOnWWAN: Swift.Bool
+  public var allowsCellularConnection: Swift.Bool
+  public var notificationCenter: Foundation.NotificationCenter
+  @available(*, deprecated, renamed: "connection.description")
+  public var currentReachabilityString: Swift.String {
+    get
+  }
+  @available(*, unavailable, renamed: "connection")
+  public var currentReachabilityStatus: BinbagVerifyPackage.Reachability.Connection {
+    get
+  }
+  public var connection: BinbagVerifyPackage.Reachability.Connection {
+    get
+  }
+  required public init(reachabilityRef: SystemConfiguration.SCNetworkReachability, queueQoS: Dispatch.DispatchQoS = .default, targetQueue: Dispatch.DispatchQueue? = nil, notificationQueue: Dispatch.DispatchQueue? = .main)
+  convenience public init(hostname: Swift.String, queueQoS: Dispatch.DispatchQoS = .default, targetQueue: Dispatch.DispatchQueue? = nil, notificationQueue: Dispatch.DispatchQueue? = .main) throws
+  convenience public init(queueQoS: Dispatch.DispatchQoS = .default, targetQueue: Dispatch.DispatchQueue? = nil, notificationQueue: Dispatch.DispatchQueue? = .main) throws
+  @objc deinit
+}
+extension BinbagVerifyPackage.Reachability {
+  public func startNotifier() throws
+  public func stopNotifier()
+  @available(*, deprecated, message: "Please use `connection != .none`")
+  public var isReachable: Swift.Bool {
+    get
+  }
+  @available(*, deprecated, message: "Please use `connection == .cellular`")
+  public var isReachableViaWWAN: Swift.Bool {
+    get
+  }
+  @available(*, deprecated, message: "Please use `connection == .wifi`")
+  public var isReachableViaWiFi: Swift.Bool {
+    get
+  }
+  public var description: Swift.String {
+    get
+  }
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class SwiftLoader : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public var frame: CoreFoundation.CGRect {
+    @objc get
+    @objc set
+  }
+  @_Concurrency.MainActor @preconcurrency public class func show(animated: Swift.Bool)
+  @_Concurrency.MainActor @preconcurrency public class func show(title: Swift.String?, imageName: Swift.String, animated: Swift.Bool)
+  @_Concurrency.MainActor @preconcurrency public class func hide()
+  @_Concurrency.MainActor @preconcurrency public class func setConfig(config: BinbagVerifyPackage.SwiftLoader.Config)
+  @_Concurrency.MainActor @preconcurrency @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  public struct Config {
+    public var size: CoreFoundation.CGFloat
+    public var spinnerColor: UIKit.UIColor
+    public var spinnerLineWidth: Swift.Float
+    public var titleTextColor: UIKit.UIColor
+    public var speed: Swift.Int
+    public var titleTextFont: UIKit.UIFont
+    public var backgroundColor: UIKit.UIColor
+    public var foregroundColor: UIKit.UIColor
+    public var foregroundAlpha: CoreFoundation.CGFloat
+    public var cornerRadius: CoreFoundation.CGFloat
+    public var centerImageBackgroundColor: UIKit.UIColor
+    public init()
+  }
+  @objc deinit
+}
+public struct DocumentVerificationData : Swift.Codable {
+  public var requestId: Swift.Int?
+  public var diveResponse: BinbagVerifyPackage.DiveResponse?
+  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+}
+public struct DiveResponse : Swift.Codable {
+  public var requestId: Swift.String?
+  public var document: BinbagVerifyPackage.Document?
+  public var documentConfidenceScores: BinbagVerifyPackage.DocumentConfidenceScores?
+  public var documentVerificationResult: BinbagVerifyPackage.DocumentVerificationResult?
+  public var faceMatchVerificationResult: BinbagVerifyPackage.FaceMatchVerificationResult?
+  public var antiSpoofingVerificationResult: BinbagVerifyPackage.AntiSpoofingVerificationResult?
+  public var externalVerificationResults: [BinbagVerifyPackage.ExternalVerificationResult]?
+  public var reference: Swift.String?
+  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+}
+public struct Document : Swift.Codable {
+  public var auditInformation: Swift.String?
+  public var cardRevisionDate: Swift.String?
+  public var endorsementsCode: Swift.String?
+  public var hazmatExpirationDate: Swift.String?
+  public var iin: Swift.String?
+  public var race: Swift.String?
+  public var restrictionCode: Swift.String?
+  public var personalNumber: Swift.String?
+  public var ssn: Swift.String?
+  public var suffix: Swift.String?
+  public var abbr3Country: Swift.String?
+  public var abbrCountry: Swift.String?
+  public var address: Swift.String?
+  public var city: Swift.String?
+  public var documentClass: Swift.String?
+  public var country: Swift.String?
+  public var dob: Swift.String?
+  public var expires: Swift.String?
+  public var eyes: Swift.String?
+  public var familyName: Swift.String?
+  public var firstName: Swift.String?
+  public var fullName: Swift.String?
+  public var gender: Swift.String?
+  public var hair: Swift.String?
+  public var height: Swift.String?
+  public var id: Swift.String?
+  public var idType: Swift.String?
+  public var issued: Swift.String?
+  public var issuedBy: Swift.String?
+  public var maidenName: Swift.String?
+  public var middleName: Swift.String?
+  public var placeOfBirth: Swift.String?
+  public var postalBox: Swift.String?
+  public var state: Swift.String?
+  public var weight: Swift.String?
+  public var zip: Swift.String?
+  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+}
+public struct DocumentConfidenceScores : Swift.Codable {
+  public var auditInformation: Swift.Int?
+  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+}
+public struct DocumentVerificationResult : Swift.Codable {
+  public var isDocumentExpired: Swift.Bool?
+  public var isOcrSuccess: Swift.Bool?
+  public var isPdf417Success: Swift.Bool?
+  public var isMrzSuccess: Swift.Bool?
+  public var isShuftiSuccess: Swift.Bool?
+  public var isDriversLicenseRealID: Swift.Bool?
+  public var isCommercialDriversLicense: Swift.Bool?
+  public var isDriveOnly: Swift.Bool?
+  public var isVeteran: Swift.Bool?
+  public var isDonor: Swift.Bool?
+  public var isLimitedDurationDocument: Swift.Bool?
+  public var isInvalidated: Swift.Bool?
+  public var isNonDomicile: Swift.Bool?
+  public var isEnhancedCredential: Swift.Bool?
+  public var isPermit: Swift.Bool?
+  public var documentConfidence: Swift.Int?
+  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+}
+public struct FaceMatchVerificationResult : Swift.Codable {
+  public var falseAcceptanceRate: Swift.Int?
+  public var faceMatchConfidence: Swift.Int?
+  public var isAgeCheckSuccess: Swift.Bool?
+  public var isGenderCheckSuccess: Swift.Bool?
+  public var assessedAgeFromSelfie: Swift.Int?
+  public var assessedAgeFromDocument: Swift.Int?
+  public var isSuspiciousPhoto: Swift.Bool?
+  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+}
+public struct AntiSpoofingVerificationResult : Swift.Codable {
+  public var antiSpoofingFaceImageConfidence: Swift.Int?
+  public var isDataFieldsTampered: Swift.Bool?
+  public var isPhotoFromDocumentTampered: Swift.Bool?
+  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+}
+public struct ExternalVerificationResult : Swift.Codable {
+  public var status: Swift.Int?
+  public var name: Swift.String?
+  public var displayName: Swift.String?
+  public var reason: Swift.String?
+  public var effect: Swift.Int?
+  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+}
+@objc @_Concurrency.MainActor @preconcurrency final public class IDCaptureVC : UIKit.UIViewController, AVFoundation.AVCapturePhotoCaptureDelegate, AVFoundation.AVCaptureVideoDataOutputSampleBufferDelegate, AVFoundation.AVCaptureMetadataOutputObjectsDelegate {
+  @_Concurrency.MainActor @preconcurrency final public let documentType: BinbagVerifyPackage.IDDocumentType
+  @_Concurrency.MainActor @preconcurrency final public let stepIndex: Swift.Int
+  @_Concurrency.MainActor @preconcurrency final public let step: BinbagVerifyPackage.IDScanStep
+  @_Concurrency.MainActor @preconcurrency final public var onComplete: (() -> Swift.Void)?
+  @_Concurrency.MainActor @preconcurrency final public var onCaptured: ((UIKit.UIImage?) -> Swift.Void)?
+  @_Concurrency.MainActor @preconcurrency final public var isFaceOnlyMode: Swift.Bool
+  @_Concurrency.MainActor @preconcurrency public init(documentType: BinbagVerifyPackage.IDDocumentType, stepIndex: Swift.Int, step: BinbagVerifyPackage.IDScanStep)
+  @_Concurrency.MainActor @preconcurrency @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @_Concurrency.MainActor @preconcurrency @objc override final public func viewDidLoad()
+  @_Concurrency.MainActor @preconcurrency @objc override final public func viewWillDisappear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor @preconcurrency @objc override final public func viewDidAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor @preconcurrency @objc final public func photoOutput(_ output: AVFoundation.AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVFoundation.AVCapturePhoto, error: (any Swift.Error)?)
+  @_Concurrency.MainActor @preconcurrency @objc final public func captureOutput(_ output: AVFoundation.AVCaptureOutput, didOutput sampleBuffer: CoreMedia.CMSampleBuffer, from connection: AVFoundation.AVCaptureConnection)
+  @_Concurrency.MainActor @preconcurrency @objc final public func metadataOutput(_ output: AVFoundation.AVCaptureMetadataOutput, didOutput metadataObjects: [AVFoundation.AVMetadataObject], from connection: AVFoundation.AVCaptureConnection)
+  @_Concurrency.MainActor @preconcurrency @objc override final public func viewDidLayoutSubviews()
+  @objc deinit
+}
+public enum IDDocumentType : Swift.CaseIterable {
+  case driversLicenseOrIDCard
+  case passport
+  case passportCard
+  case internationalID
+  public var title: Swift.String {
+    get
+  }
+  public static func == (a: BinbagVerifyPackage.IDDocumentType, b: BinbagVerifyPackage.IDDocumentType) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public typealias AllCases = [BinbagVerifyPackage.IDDocumentType]
+  nonisolated public static var allCases: [BinbagVerifyPackage.IDDocumentType] {
+    get
+  }
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public struct IDScanStep {
+  public let title: Swift.String
+  public init(title: Swift.String)
+}
+@objc @_Concurrency.MainActor @preconcurrency final public class IDScanStepsVC : UIKit.UIViewController {
+  @_Concurrency.MainActor @preconcurrency public init(documentType: BinbagVerifyPackage.IDDocumentType)
+  @_Concurrency.MainActor @preconcurrency @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @_Concurrency.MainActor @preconcurrency @objc override final public func viewDidLoad()
+  @_Concurrency.MainActor @preconcurrency @objc override final public func viewWillAppear(_ animated: Swift.Bool)
+  @objc deinit
+}
+extension UIKit.UITabBarController {
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic open func viewWillLayoutSubviews()
+}
+extension UIKit.UILabel {
+  @_Concurrency.MainActor @preconcurrency public var requiredHeight: CoreFoundation.CGFloat {
+    get
+  }
+}
+extension UIKit.UITextView : UIKit.UITextViewDelegate {
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic open var bounds: CoreFoundation.CGRect {
+    @objc get
+    @objc set
+  }
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func textViewDidChange(_ textView: UIKit.UITextView)
+}
+extension Foundation.Date {
+  public func next(_ weekday: Foundation.Date.Weekday, direction: Foundation.Calendar.SearchDirection = .forward, considerToday: Swift.Bool = false) -> Foundation.Date
+  public enum Weekday : Swift.Int {
+    case sunday, monday, tuesday, wednesday, thursday, friday, saturday
+    public init?(rawValue: Swift.Int)
+    @available(iOS 8.0, tvOS 9.0, watchOS 2.0, macOS 10.10, *)
+    public typealias RawValue = Swift.Int
+    public var rawValue: Swift.Int {
+      get
+    }
+  }
+}
+extension Foundation.NSMutableAttributedString {
+  public func setAsLink(textToFind: Swift.String, linkURL: Swift.String) -> Swift.Bool
+}
+extension Foundation.UserDefaults {
+  open func setStruct<T>(_ value: T?, forKey defaultName: Swift.String) where T : Swift.Decodable, T : Swift.Encodable
+  open func structData<T>(_ type: T.Type, forKey defaultName: Swift.String) -> T? where T : Swift.Decodable
+  open func setStructArray<T>(_ value: [T], forKey defaultName: Swift.String) where T : Swift.Decodable, T : Swift.Encodable
+  open func structArrayData<T>(_ type: T.Type, forKey defaultName: Swift.String) -> [T] where T : Swift.Decodable
+}
+extension Swift.String {
+  public var convertHtmlToNSAttributedString: Foundation.NSAttributedString? {
+    get
+  }
+  public func convertHtmlToAttributedStringWithCSS(font: UIKit.UIFont?, csscolor: Swift.String, lineheight: Swift.Int, csstextalign: Swift.String) -> Foundation.NSAttributedString?
+}
+extension BinbagVerifyPackage.BinbagEnvironment : Swift.Equatable {}
+extension BinbagVerifyPackage.BinbagEnvironment : Swift.Hashable {}
+extension BinbagVerifyPackage.BinbagVerificationType : Swift.Equatable {}
+extension BinbagVerifyPackage.BinbagVerificationType : Swift.Hashable {}
+@available(iOS 14.0, *)
+extension BinbagVerifyPackage.BinbagVerifyModifier : Swift.Sendable {}
+@available(iOS 14.0, *)
+extension BinbagVerifyPackage.BinbagVerifyView : Swift.Sendable {}
+@available(iOS 14.0, *)
+extension BinbagVerifyPackage.BinbagVerifyButton : Swift.Sendable {}
+@available(iOS 14.0, *)
+extension BinbagVerifyPackage.BinbagVerifyAutoPresenter : Swift.Sendable {}
+@available(iOS 14.0, *)
+extension BinbagVerifyPackage.BinbagVerifyExampleView : Swift.Sendable {}
+extension BinbagVerifyPackage.VideoQuality : Swift.Equatable {}
+extension BinbagVerifyPackage.VideoQuality : Swift.Hashable {}
+@available(*, unavailable, renamed: "Connection")
+extension BinbagVerifyPackage.Reachability.NetworkStatus : Swift.Equatable {}
+@available(*, unavailable, renamed: "Connection")
+extension BinbagVerifyPackage.Reachability.NetworkStatus : Swift.Hashable {}
+extension BinbagVerifyPackage.Reachability.Connection : Swift.Equatable {}
+extension BinbagVerifyPackage.Reachability.Connection : Swift.Hashable {}
+extension BinbagVerifyPackage.IDDocumentType : Swift.Equatable {}
+extension BinbagVerifyPackage.IDDocumentType : Swift.Hashable {}
+extension Foundation.Date.Weekday : Swift.Equatable {}
+extension Foundation.Date.Weekday : Swift.Hashable {}
+extension Foundation.Date.Weekday : Swift.RawRepresentable {}

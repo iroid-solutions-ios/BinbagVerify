@@ -189,10 +189,14 @@ class VerifiedScreen: UIViewController {
     }
 
     @objc private func onDoneButtonTapped() {
-        self.navigationController?.popToViewController(ofClass: SignUpScreen.self)
+        // Complete verification and dismiss
+        BinbagVerify.shared.completeVerification(with: verificationData)
+        self.navigationController?.dismiss(animated: true)
     }
 
     @IBAction func onDone(_ sender: UIButton) {
-        self.navigationController?.popToViewController(ofClass: SignUpScreen.self)
+        // Complete verification and dismiss
+        BinbagVerify.shared.completeVerification(with: verificationData)
+        self.navigationController?.dismiss(animated: true)
     }
 }

@@ -60,4 +60,26 @@ extension IDDocumentType {
     }
 }
 
+// MARK: - Upload Document Request
+
+struct UploadDocumentRequest {
+    let age: String
+    let documentType: String
+    let email: String
+
+    init(age: String, documentType: String, email: String) {
+        self.age = age
+        self.documentType = documentType
+        self.email = email
+    }
+
+    func toParameters() -> [String: Any] {
+        return [
+            "age": age,
+            "documentType": documentType,
+            "email": email
+        ]
+    }
+}
+
 

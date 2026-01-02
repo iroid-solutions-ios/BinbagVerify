@@ -45,6 +45,16 @@ final class APIManager: @unchecked Sendable {
     var stripeMode: StripeMode = .production
     var platform = "iOS"
 
+    // API Key from SDK configuration
+    private var apiKey: String?
+
+    // Debug logging flag - enabled in DEBUG builds
+    #if DEBUG
+    private let isAppInTestMode = true
+    #else
+    private let isAppInTestMode = false
+    #endif
+
     private let session: Session
     private let networkMonitor = NWPathMonitor()
     private let monitorQueue = DispatchQueue(label: "NetworkMonitor")
@@ -73,6 +83,12 @@ final class APIManager: @unchecked Sendable {
 
     deinit {
         networkMonitor.cancel()
+    }
+
+    /// Update API configuration from SDK
+    func updateConfig(apiKey: String, baseURL: String) {
+        self.apiKey = apiKey
+        self.baseURL = URL(string: baseURL)
     }
 
     private func startNetworkMonitoring() {
@@ -348,8 +364,11 @@ extension APIManager {
 // MARK: - Helpers
 extension APIManager {
     func buildHeaders() -> HTTPHeaders {
-        var headers: HTTPHeaders = ["Accept": "application/json",
-                                    "x-secret-key" : "27a34e6c7fecca9c9d03118a85d18cd81f0b95ad02847725d4c7ae00abeb998f"]
+        var headers: HTTPHeaders = ["Accept": "application/json"]
+        // Use API key from SDK configuration
+        if let apiKey = apiKey, !apiKey.isEmpty {
+            headers.add(name: "x-secret-key", value: apiKey)
+        }
         if let accessToken = Utility.getAccessToken(), !accessToken.isEmpty {
             headers.add(name: "Authorization", value: "Bearer \(accessToken)")
         }
@@ -611,8 +630,8 @@ extension APIManager {
             method: method,
             headers: headers
         )
-        .uploadProgress { progress in
-            if isAppInTestMode {
+        .uploadProgress { [weak self] progress in
+            if self?.isAppInTestMode == true {
                 print("Upload Progress: \(progress.fractionCompleted)")
             }
         }
@@ -662,8 +681,8 @@ extension APIManager {
         }
 
         session.download(url, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: nil, to: destination)
-            .downloadProgress { progress in
-                if isAppInTestMode {
+            .downloadProgress { [weak self] progress in
+                if self?.isAppInTestMode == true {
                     print("Download Progress: \(progress.fractionCompleted)")
                 }
             }

@@ -6,13 +6,8 @@
 //
 
 import UIKit
-//import GoogleMobileAds
-//import FTPopOverMenu_Swift
-//import Alamofire
 import AVFoundation
-//import SDWebImage
 import Photos
-import NotificationBannerSwift
 
 class Utility: NSObject {
     
@@ -743,12 +738,12 @@ class Utility: NSObject {
         return passwordTest.evaluate(with: password)
     }
     
-    class func successAlert(message: String){
-        let banner = GrowingNotificationBanner(title: APPLICATION_NAME, subtitle: message, style: .success)
-        banner.autoDismiss = true
-        banner.duration = 2.0
-        banner.show()
-    }
+//    class func successAlert(message: String){
+//        let banner = GrowingNotificationBanner(title: APPLICATION_NAME, subtitle: message, style: .success)
+//        banner.autoDismiss = true
+//        banner.duration = 2.0
+//        banner.show()
+//    }
     
     //MARK: Internet Alert
 //    class func showNoInternetConnectionAlertDialog(vc: UIViewController) {

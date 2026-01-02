@@ -199,9 +199,8 @@ public final class IDScanStepsVC: UIViewController {
         if currentStepIndex < steps.count {
             openCapture(for: currentStepIndex)
         } else {
-            if let vc = STORYBOARD.verifyAccount.instantiateViewController(withIdentifier: "VerifiedScreen") as? VerifiedScreen {
-                navigationController?.pushViewController(vc, animated: true)
-            }
+            let vc = VerifiedScreen()
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
     
@@ -211,8 +210,8 @@ public final class IDScanStepsVC: UIViewController {
         let images = resolvedCapturedImages()
         // TODO: wire real age from your user model
         let age = "23"
-        // Use email captured during signup instead of a static value.
-        let email = signUpRequest?.email?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        // Use email from current verification session
+        let email = BinbagVerify.shared.currentEmail ?? ""
         uploadVerification(documentType: "\(typeCode)",
                            documentFront: images.front?.jpegData(compressionQuality: 0.5) ?? Data(),
                            documentBack: images.back?.jpegData(compressionQuality: 0.5) ?? Data(),
@@ -243,11 +242,8 @@ public final class IDScanStepsVC: UIViewController {
             // Completed flow — navigate to success screen for now
             refreshDocTypeTitle() // Reset to base title when done
             updateStepCards()
-            if let vc = STORYBOARD.verifyAccount.instantiateViewController(withIdentifier: "VerifiedScreen") as? VerifiedScreen {
-                navigationController?.pushViewController(vc, animated: true)
-            } else {
-                navigationController?.popViewController(animated: true)
-            }
+            let vc = VerifiedScreen()
+            navigationController?.pushViewController(vc, animated: true)
             return
         }
         
@@ -456,10 +452,9 @@ public final class IDScanStepsVC: UIViewController {
                         print(jsonString)
                     }
                     // Navigate to VerifiedScreen with data
-                    if let vc = STORYBOARD.verifyAccount.instantiateViewController(withIdentifier: "VerifiedScreen") as? VerifiedScreen {
-                        vc.verificationData = res
-                        self.navigationController?.pushViewController(vc, animated: true)
-                    }
+                    let vc = VerifiedScreen()
+                    vc.verificationData = res
+                    self.navigationController?.pushViewController(vc, animated: true)
                 }
 
             }, failure: { [weak self] (error) in

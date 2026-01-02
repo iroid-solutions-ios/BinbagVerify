@@ -13,7 +13,7 @@ import UIKit
 public struct BinbagVerifyModifier: ViewModifier {
     @Binding var isPresented: Bool
     let verificationType: BinbagVerificationType
-    let userEmail: String?
+    let email: String?
     let onResult: (BinbagVerificationResult) -> Void
 
     public func body(content: Content) -> some View {
@@ -21,7 +21,7 @@ public struct BinbagVerifyModifier: ViewModifier {
             .fullScreenCover(isPresented: $isPresented) {
                 BinbagVerifyView(
                     verificationType: verificationType,
-                    userEmail: userEmail,
+                    email: email,
                     onResult: { result in
                         isPresented = false
                         onResult(result)
@@ -39,22 +39,58 @@ public struct BinbagVerifyModifier: ViewModifier {
 @available(iOS 14.0, *)
 public extension View {
 
+    /// Present BinbagVerify document scan flow in SwiftUI
+    /// - Parameters:
+    ///   - isPresented: Binding to control presentation
+    ///   - email: User's email address (optional for document scan)
+    ///   - onResult: Callback with verification result
+    func binbagDocumentScan(
+        isPresented: Binding<Bool>,
+        email: String? = nil,
+        onResult: @escaping (BinbagVerificationResult) -> Void
+    ) -> some View {
+        modifier(BinbagVerifyModifier(
+            isPresented: isPresented,
+            verificationType: .documentScan,
+            email: email,
+            onResult: onResult
+        ))
+    }
+
+    /// Present BinbagVerify face detection flow in SwiftUI
+    /// - Parameters:
+    ///   - isPresented: Binding to control presentation
+    ///   - email: User's email address (required for face detection)
+    ///   - onResult: Callback with verification result
+    func binbagFaceDetection(
+        isPresented: Binding<Bool>,
+        email: String,
+        onResult: @escaping (BinbagVerificationResult) -> Void
+    ) -> some View {
+        modifier(BinbagVerifyModifier(
+            isPresented: isPresented,
+            verificationType: .faceDetection,
+            email: email,
+            onResult: onResult
+        ))
+    }
+
     /// Present BinbagVerify verification flow in SwiftUI
     /// - Parameters:
     ///   - isPresented: Binding to control presentation
-    ///   - type: The type of verification flow
-    ///   - userEmail: Optional email for reverification
+    ///   - type: The type of verification flow (.documentScan or .faceDetection)
+    ///   - email: User's email address (required for faceDetection)
     ///   - onResult: Callback with verification result
     func binbagVerify(
         isPresented: Binding<Bool>,
-        type: BinbagVerificationType = .fullVerification,
-        userEmail: String? = nil,
+        type: BinbagVerificationType = .documentScan,
+        email: String? = nil,
         onResult: @escaping (BinbagVerificationResult) -> Void
     ) -> some View {
         modifier(BinbagVerifyModifier(
             isPresented: isPresented,
             verificationType: type,
-            userEmail: userEmail,
+            email: email,
             onResult: onResult
         ))
     }
@@ -64,42 +100,36 @@ public extension View {
 @available(iOS 14.0, *)
 public struct BinbagVerifyView: UIViewControllerRepresentable {
     let verificationType: BinbagVerificationType
-    let userEmail: String?
+    let email: String?
     let onResult: (BinbagVerificationResult) -> Void
     let onDismiss: () -> Void
 
     public init(
-        verificationType: BinbagVerificationType = .fullVerification,
-        userEmail: String? = nil,
+        verificationType: BinbagVerificationType = .documentScan,
+        email: String? = nil,
         onResult: @escaping (BinbagVerificationResult) -> Void,
         onDismiss: @escaping () -> Void = {}
     ) {
         self.verificationType = verificationType
-        self.userEmail = userEmail
+        self.email = email
         self.onResult = onResult
         self.onDismiss = onDismiss
     }
 
     public func makeUIViewController(context: Context) -> UINavigationController {
+        // Store email in shared instance for this verification session
+        BinbagVerify.shared.currentEmail = email
+
         let viewController: UIViewController
 
         switch verificationType {
-        case .fullVerification:
-            // Start with Introduction Video screen
-            viewController = IntroductionVideoScreen()
+        case .documentScan:
+            // Start with IDScanStepsVC directly
+            viewController = IDScanStepsVC(documentType: .driversLicenseOrIDCard)
 
-        case .documentOnly:
-            // IDScanDocumentTypeVC is created programmatically (not in storyboard)
-            viewController = IDScanDocumentTypeVC()
-
-        case .reverification:
-            // Use programmatic LoginScreen
-            let vc = LoginScreen()
-            if let email = userEmail {
-                vc.loadViewIfNeeded()
-                vc.emailTextField.text = email
-            }
-            viewController = vc
+        case .faceDetection:
+            // Start with face capture only
+            viewController = createFaceOnlyCaptureVC()
         }
 
         // Add close button
@@ -123,12 +153,65 @@ public struct BinbagVerifyView: UIViewControllerRepresentable {
         Coordinator(onResult: onResult, onDismiss: onDismiss)
     }
 
-    private func getStoryboard() -> UIStoryboard {
-        return UIStoryboard(name: "VerifyDocument", bundle: Bundle.module)
-    }
+    private func createFaceOnlyCaptureVC() -> UIViewController {
+        let faceStep = IDScanStep(title: "Face")
+        let captureVC = IDCaptureVC(documentType: .driversLicenseOrIDCard, stepIndex: 0, step: faceStep)
+        captureVC.isFaceOnlyMode = true
 
-    private func getAuthStoryboard() -> UIStoryboard {
-        return UIStoryboard(name: "Authentication", bundle: Bundle.module)
+        // Set up face capture completion handler
+        captureVC.onCaptured = { [weak captureVC] image in
+            guard let vc = captureVC else { return }
+
+            // Get email from current verification session
+            guard let email = BinbagVerify.shared.currentEmail, !email.isEmpty else {
+                BinbagVerify.shared.failVerification(with: .verificationFailed("Email is required for face detection"))
+                return
+            }
+
+            guard let imageData = image?.jpegData(compressionQuality: 0.5) else {
+                BinbagVerify.shared.failVerification(with: .verificationFailed("Failed to capture face image"))
+                return
+            }
+
+            Utility.showIndicator()
+            AuthServices.shared.reverify(email: email, age: "0", livePhotoData: imageData) { statusCode, response in
+                Utility.hideIndicator()
+
+                DispatchQueue.main.async {
+                    // Dismiss the screen first, then call completion
+                    vc.navigationController?.dismiss(animated: true) {
+                        if (200..<300).contains(statusCode), let data = response.documentVerificationData {
+                            // Success
+                            BinbagVerify.shared.completionHandler?(BinbagVerificationResult(
+                                isVerified: true,
+                                documentData: data,
+                                error: nil
+                            ))
+                        } else {
+                            // Failed
+                            BinbagVerify.shared.completionHandler?(BinbagVerificationResult(
+                                isVerified: false,
+                                documentData: response.documentVerificationData,
+                                error: .verificationFailed(response.message ?? "Verification failed")
+                            ))
+                        }
+                    }
+                }
+            } failure: { error in
+                Utility.hideIndicator()
+                DispatchQueue.main.async {
+                    vc.navigationController?.dismiss(animated: true) {
+                        BinbagVerify.shared.completionHandler?(BinbagVerificationResult(
+                            isVerified: false,
+                            documentData: nil,
+                            error: .verificationFailed(error)
+                        ))
+                    }
+                }
+            }
+        }
+
+        return captureVC
     }
 
     // MARK: - Coordinator
@@ -158,20 +241,20 @@ public struct BinbagVerifyView: UIViewControllerRepresentable {
 public struct BinbagVerifyButton: View {
     let title: String
     let verificationType: BinbagVerificationType
-    let userEmail: String?
+    let email: String?
     let onResult: (BinbagVerificationResult) -> Void
 
     @State private var isPresented = false
 
     public init(
         title: String = "Verify Identity",
-        verificationType: BinbagVerificationType = .fullVerification,
-        userEmail: String? = nil,
+        verificationType: BinbagVerificationType = .documentScan,
+        email: String? = nil,
         onResult: @escaping (BinbagVerificationResult) -> Void
     ) {
         self.title = title
         self.verificationType = verificationType
-        self.userEmail = userEmail
+        self.email = email
         self.onResult = onResult
     }
 
@@ -182,7 +265,7 @@ public struct BinbagVerifyButton: View {
         .binbagVerify(
             isPresented: $isPresented,
             type: verificationType,
-            userEmail: userEmail,
+            email: email,
             onResult: onResult
         )
     }
@@ -196,22 +279,56 @@ public class BinbagVerifyManager: ObservableObject {
     @Published public var isPresented: Bool = false
     @Published public var lastResult: BinbagVerificationResult?
 
-    public var verificationType: BinbagVerificationType = .fullVerification
-    public var userEmail: String?
+    public var verificationType: BinbagVerificationType = .documentScan
+    public var email: String?
 
     private var completionHandler: ((BinbagVerificationResult) -> Void)?
 
     private init() {}
 
+    /// Start document scan flow - call this from anywhere in SwiftUI
+    /// Usage: BinbagVerifyManager.shared.startDocumentScan(email: "user@example.com") { result in ... }
+    /// - Parameters:
+    ///   - email: User's email address (optional for document scan)
+    ///   - completion: Completion handler with the result
+    public func startDocumentScan(
+        email: String? = nil,
+        completion: @escaping (BinbagVerificationResult) -> Void
+    ) {
+        self.verificationType = .documentScan
+        self.email = email
+        self.completionHandler = completion
+        self.isPresented = true
+    }
+
+    /// Start face detection flow - call this from anywhere in SwiftUI
+    /// Usage: BinbagVerifyManager.shared.startFaceDetection(email: "user@example.com") { result in ... }
+    /// - Parameters:
+    ///   - email: User's email address (required for face detection)
+    ///   - completion: Completion handler with the result
+    public func startFaceDetection(
+        email: String,
+        completion: @escaping (BinbagVerificationResult) -> Void
+    ) {
+        self.verificationType = .faceDetection
+        self.email = email
+        self.completionHandler = completion
+        self.isPresented = true
+    }
+
     /// Start verification - call this from anywhere in SwiftUI
-    /// Usage: BinbagVerifyManager.shared.start { result in ... }
+    /// Usage: BinbagVerifyManager.shared.start(type: .documentScan, email: "user@example.com") { result in ... }
+    /// - Parameters:
+    ///   - type: The type of verification flow
+    ///   - email: User's email address (required for faceDetection)
+    ///   - completion: Completion handler with the result
     public func start(
-        type: BinbagVerificationType = .fullVerification,
-        userEmail: String? = nil,
+        type: BinbagVerificationType = .documentScan,
+        email: String? = nil,
         completion: @escaping (BinbagVerificationResult) -> Void
     ) {
         self.verificationType = type
-        self.userEmail = userEmail
+        self.email = email
         self.completionHandler = completion
         self.isPresented = true
     }
@@ -220,6 +337,7 @@ public class BinbagVerifyManager: ObservableObject {
     internal func complete(with result: BinbagVerificationResult) {
         self.lastResult = result
         self.isPresented = false
+        self.email = nil
         self.completionHandler?(result)
         self.completionHandler = nil
     }
@@ -235,7 +353,7 @@ public struct BinbagVerifyAutoPresenter: ViewModifier {
             .fullScreenCover(isPresented: $manager.isPresented) {
                 BinbagVerifyView(
                     verificationType: manager.verificationType,
-                    userEmail: manager.userEmail,
+                    email: manager.email,
                     onResult: { result in
                         manager.complete(with: result)
                     },
@@ -282,6 +400,7 @@ public extension View {
 @available(iOS 14.0, *)
 public struct BinbagVerifyExampleView: View {
     @State private var verificationStatus: String = "Not verified"
+    @State private var userEmail: String = "user@example.com"
 
     public init() {}
 
@@ -290,13 +409,31 @@ public struct BinbagVerifyExampleView: View {
             Text("BinbagVerify SDK")
                 .font(.title)
 
+            TextField("Email", text: $userEmail)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding(.horizontal)
+
             Text(verificationStatus)
                 .foregroundColor(.gray)
 
-            Button("Start Verification") {
-                BinbagVerifyManager.shared.start { result in
+            Button("Document Scan") {
+                BinbagVerifyManager.shared.startDocumentScan(email: userEmail) { result in
                     if result.isVerified {
-                        verificationStatus = "Verified ✓"
+                        verificationStatus = "Document Verified"
+                    } else if let error = result.error {
+                        verificationStatus = "Error: \(error.localizedDescription)"
+                    }
+                }
+            }
+            .padding()
+            .background(Color.blue)
+            .foregroundColor(.white)
+            .cornerRadius(10)
+
+            Button("Face Detection") {
+                BinbagVerifyManager.shared.startFaceDetection(email: userEmail) { result in
+                    if result.isVerified {
+                        verificationStatus = "Face Verified"
                     } else if let error = result.error {
                         verificationStatus = "Error: \(error.localizedDescription)"
                     }
